@@ -11,8 +11,8 @@ class Car(Actor):
 	
 	def __init__(self, color, pos):
 		self.dimensions = [
-			32,
-			16
+			24,
+			18
 		]
 		Actor.__init__(self, self.dimensions)
 		self.rect = pygame.Rect(0, 0, self.dimensions[0], self.dimensions[1])
