@@ -38,7 +38,8 @@ if __name__ == "__main__":
 	sm = SceneManager()
 	test_track = track.Track()
 	players = [
-		actor.Player(actor.Car(core.WHITE, test_track.spawn_positions[0], "gfx/player1.png"))
+		actor.Player(actor.Car(test_track.spawn_positions[1], "gfx/player1.png")),
+		actor.Player(actor.Car(test_track.spawn_positions[2], "gfx/player2.png"))
 	]
 	main_menu = ui.MainMenu()
 	pause_screen = ui.PauseScreen()
@@ -50,7 +51,6 @@ if __name__ == "__main__":
 		elif sm.scene == SceneManager.GAME:
 			test_track.draw(screen)
 			[p.car.draw(screen) for p in players]
-			# test_track.updated = True
 		elif sm.scene == SceneManager.PAUSE:
 			pause_screen.draw(screen)
 
@@ -88,7 +88,7 @@ if __name__ == "__main__":
 		clock.tick(FPS)
 		redraw()
 		if sm.scene == SceneManager.GAME:
-			players[0].move()
+			players[0].move(test_track)
 		for e in pygame.event.get():
 			if e.type == pygame.QUIT:
 				sys.exit()

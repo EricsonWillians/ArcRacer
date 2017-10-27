@@ -7,7 +7,6 @@ class Track:
 
 	TRACK_SIZE = 16
 
-	START = 0
 	DIRT = 1
 	ROAD = 2
 
@@ -15,35 +14,43 @@ class Track:
 	ROAD_IMAGE = "gfx/road.png"
 
 	def __init__(self):
-		self.data = test.track_data
+		self.ground_data = test.track_ground_data
 		self.spawnpoints = test.track_spawnpoints
 		self.waypoints = test.track_waypoints
 		self.actors = []
+		self.ground_positions = {}
 		self.spawn_positions = {}
+		self.waypoint_positions = {}
 		self.actor_dimensions = [
 			options["RESOLUTION"][0] / 16,
 			options["RESOLUTION"][1] / 16
 		]
 		self.surface = pygame.Surface((options["RESOLUTION"][0], options["RESOLUTION"][1]), pygame.SRCALPHA, 32)
-		for row in self.data:
+		for row in self.ground_data:
 			actor_row = []
 			for column in row:
-				if column == Track.START:
-					pass
-				elif column == Track.DIRT:
+				if column == Track.DIRT:
 					actor_row.append(pygame.image.load(Track.DIRT_IMAGE))
 				elif column == Track.ROAD:
 					actor_row.append(pygame.image.load(Track.ROAD_IMAGE))
 			self.actors.append(actor_row)
-		occurence_counter = 0
 		for y in range(Track.TRACK_SIZE):
 			for x in range(Track.TRACK_SIZE):
+				if self.ground_data[y][x] != 0:
+					self.ground_positions[(
+						x*int(self.actor_dimensions[0]),
+						y*int(self.actor_dimensions[1])
+					)] = self.ground_data[y][x]
 				if self.spawnpoints[y][x] != 0:
-					self.spawn_positions[occurence_counter] = (
+					self.spawn_positions[self.spawnpoints[y][x]] = (
 						x*int(self.actor_dimensions[0]) + Car.WIDTH,
 						y*int(self.actor_dimensions[1]) + Car.HEIGHT
 					)
-					occurence_counter += 1
+				if self.waypoints[y][x] != 0:
+					self.waypoint_positions[self.waypoints[y][x]] = (
+						x*int(self.actor_dimensions[0]) + Car.WIDTH,
+						y*int(self.actor_dimensions[1]) + Car.HEIGHT
+					)
 		# Blitting the track images to the track surface for greater performance.
 		for y in range(Track.TRACK_SIZE):
 			for x in range(Track.TRACK_SIZE):
