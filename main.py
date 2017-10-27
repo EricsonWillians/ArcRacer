@@ -57,27 +57,27 @@ if __name__ == "__main__":
 	def intercept_in_game(e):
 		if e.type == pygame.KEYDOWN:
 			# Movement-related
-			if e.key == pygame.K_UP:
+			if e.key == options["ACCELERATE"]:
 				players[0].states[0] = True
-			elif e.key == pygame.K_DOWN:
+			elif e.key == options["REVERSE"]:
 				players[0].states[1] = True
-			elif e.key == pygame.K_LEFT:
+			elif e.key == options["STEER_LEFT"]:
 				players[0].states[2] = True	
-			elif e.key == pygame.K_RIGHT:
+			elif e.key == options["STEER_RIGHT"]:
 				players[0].states[3] = True
 			# Other
-			elif e.key == pygame.K_p:
+			elif e.key == options["PAUSE"]:
 				sm.change_scene(SceneManager.PAUSE)
 			elif e.key == pygame.K_ESCAPE:
 				sm.change_scene(SceneManager.MAIN_MENU)
 		elif e.type == pygame.KEYUP:	
-			if e.key == pygame.K_UP:
+			if e.key == options["ACCELERATE"]:
 				players[0].states[0] = False
-			elif e.key == pygame.K_DOWN:
+			elif e.key == options["REVERSE"]:
 				players[0].states[1] = False
-			elif e.key == pygame.K_LEFT:
+			elif e.key == options["STEER_LEFT"]:
 				players[0].states[2] = False
-			elif e.key == pygame.K_RIGHT:
+			elif e.key == options["STEER_RIGHT"]:
 				players[0].states[3] = False
 	def intercept_in_pause(e):
 		if e.type == pygame.KEYDOWN:
