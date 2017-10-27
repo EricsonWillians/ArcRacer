@@ -36,11 +36,15 @@ class SceneManager:
 
 if __name__ == "__main__":
 	sm = SceneManager()
+	tracks = []
+	number_of_humans = 2
+	number_of_players = 5
+	max_player_slot = 5
 	test_track = track.Track()
 	players = [
-		actor.Player(actor.Car(test_track.spawn_positions[1], "gfx/player1.png")),
-		actor.Player(actor.Car(test_track.spawn_positions[2], "gfx/player2.png"))
+		actor.Player(actor.Car(test_track.spawn_positions[n], "gfx/player{_n}.png".format(_n=n))) for n in range(1, 6)
 	]
+	print(players)
 	main_menu = ui.MainMenu()
 	pause_screen = ui.PauseScreen()
 	def redraw():
@@ -55,30 +59,34 @@ if __name__ == "__main__":
 			pause_screen.draw(screen)
 
 	def intercept_in_game(e):
-		if e.type == pygame.KEYDOWN:
-			# Movement-related
-			if e.key == options["ACCELERATE"]:
-				players[0].states[0] = True
-			elif e.key == options["REVERSE"]:
-				players[0].states[1] = True
-			elif e.key == options["STEER_LEFT"]:
-				players[0].states[2] = True	
-			elif e.key == options["STEER_RIGHT"]:
-				players[0].states[3] = True
-			# Other
-			elif e.key == options["PAUSE"]:
-				sm.change_scene(SceneManager.PAUSE)
-			elif e.key == pygame.K_ESCAPE:
-				sm.change_scene(SceneManager.MAIN_MENU)
-		elif e.type == pygame.KEYUP:	
-			if e.key == options["ACCELERATE"]:
-				players[0].states[0] = False
-			elif e.key == options["REVERSE"]:
-				players[0].states[1] = False
-			elif e.key == options["STEER_LEFT"]:
-				players[0].states[2] = False
-			elif e.key == options["STEER_RIGHT"]:
-				players[0].states[3] = False
+		for n in range(number_of_humans):
+			if e.type == pygame.KEYDOWN:
+				# Movement-related
+				if e.key == options["PLAYER{_n}_ACCELERATE".format(_n=n+1)]:
+					players[n].states[0] = True
+				elif e.key == options["PLAYER{_n}_REVERSE".format(_n=n+1)]:
+					players[n].states[1] = True
+				elif e.key == options["PLAYER{_n}_STEER_LEFT".format(_n=n+1)]:
+					players[n].states[2] = True	
+				elif e.key == options["PLAYER{_n}_STEER_RIGHT".format(_n=n+1)]:
+					players[n].states[3] = True
+				# Other
+				elif e.key == options["PAUSE"]:
+					sm.change_scene(SceneManager.PAUSE)
+				elif e.key == pygame.K_ESCAPE:
+					sm.change_scene(SceneManager.MAIN_MENU)
+			elif e.type == pygame.KEYUP:	
+				if e.key == options["PLAYER{_n}_ACCELERATE".format(_n=n+1)]:
+					players[n].states[0] = False
+				elif e.key == options["PLAYER{_n}_REVERSE".format(_n=n+1)]:
+					players[n].states[1] = False
+				elif e.key == options["PLAYER{_n}_STEER_LEFT".format(_n=n+1)]:
+					players[n].states[2] = False
+				elif e.key == options["PLAYER{_n}_STEER_RIGHT".format(_n=n+1)]:
+					players[n].states[3] = False
+		for n in range(number_of_humans, max_player_slot):
+			pass
+
 	def intercept_in_pause(e):
 		if e.type == pygame.KEYDOWN:
 			if e.key == pygame.K_ESCAPE:
@@ -88,7 +96,8 @@ if __name__ == "__main__":
 		clock.tick(FPS)
 		redraw()
 		if sm.scene == SceneManager.GAME:
-			players[0].move(test_track)
+			for n in range(number_of_humans):
+				players[n].move(test_track)
 		for e in pygame.event.get():
 			if e.type == pygame.QUIT:
 				sys.exit()

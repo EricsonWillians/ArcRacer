@@ -22,17 +22,25 @@ class Track:
 		self.spawn_positions = {}
 		self.waypoint_positions = {}
 		self.actor_dimensions = [
-			options["RESOLUTION"][0] / 16,
-			options["RESOLUTION"][1] / 16
+			int(options["RESOLUTION"][0] / 16),
+			int(options["RESOLUTION"][1] / 16)
 		]
 		self.surface = pygame.Surface((options["RESOLUTION"][0], options["RESOLUTION"][1]), pygame.SRCALPHA, 32)
 		for row in self.ground_data:
 			actor_row = []
 			for column in row:
 				if column == Track.DIRT:
-					actor_row.append(pygame.image.load(Track.DIRT_IMAGE))
+					img = pygame.transform.scale(
+						pygame.image.load(Track.DIRT_IMAGE), 
+						self.actor_dimensions
+					)
+					actor_row.append(img)
 				elif column == Track.ROAD:
-					actor_row.append(pygame.image.load(Track.ROAD_IMAGE))
+					img = pygame.transform.scale(
+						pygame.image.load(Track.ROAD_IMAGE), 
+						self.actor_dimensions
+					)
+					actor_row.append(img)
 			self.actors.append(actor_row)
 		for y in range(Track.TRACK_SIZE):
 			for x in range(Track.TRACK_SIZE):
