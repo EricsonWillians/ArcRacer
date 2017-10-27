@@ -36,10 +36,10 @@ class SceneManager:
 
 if __name__ == "__main__":
 	sm = SceneManager()
-	players = [
-		actor.Player(actor.Car(core.WHITE, [200, 300]))
-	]
 	test_track = track.Track()
+	players = [
+		actor.Player(actor.Car(core.WHITE, test_track.spawn_positions[0], "gfx/player1.png"))
+	]
 	main_menu = ui.MainMenu()
 	pause_screen = ui.PauseScreen()
 	def redraw():
@@ -50,6 +50,7 @@ if __name__ == "__main__":
 		elif sm.scene == SceneManager.GAME:
 			test_track.draw(screen)
 			[p.car.draw(screen) for p in players]
+			# test_track.updated = True
 		elif sm.scene == SceneManager.PAUSE:
 			pause_screen.draw(screen)
 

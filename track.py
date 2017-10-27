@@ -1,52 +1,57 @@
 import pygame
 from tracks import test
-from actor import Actor
+from actor import Actor, Car
 from cfg import options
 
 class Track:
 
-	ACTOR_LIMIT = 16
+	TRACK_SIZE = 16
 
 	START = 0
 	DIRT = 1
 	ROAD = 2
 
-	DIRT_COLOR = (51, 25, 0, 255)
-	ROAD_COLOR = (96, 96, 96, 255)
+	DIRT_IMAGE = "gfx/dirt.png"
+	ROAD_IMAGE = "gfx/road.png"
 
 	def __init__(self):
-		self.track_data = test.track_data
-		self.track_actors = []
+		self.data = test.track_data
+		self.spawnpoints = test.track_spawnpoints
+		self.waypoints = test.track_waypoints
+		self.actors = []
+		self.spawn_positions = {}
 		self.actor_dimensions = [
 			options["RESOLUTION"][0] / 16,
 			options["RESOLUTION"][1] / 16
 		]
-		for column in self.track_data:
+		self.surface = pygame.Surface((options["RESOLUTION"][0], options["RESOLUTION"][1]), pygame.SRCALPHA, 32)
+		for row in self.data:
 			actor_row = []
-			for row in column:
-				s = pygame.Surface(self.actor_dimensions, pygame.SRCALPHA, 32)
-				r = pygame.Rect(0, 0, self.actor_dimensions[0], self.actor_dimensions[1])
-				if row == Track.START:
+			for column in row:
+				if column == Track.START:
 					pass
-				elif row == Track.DIRT:
-					pygame.draw.rect(s, Track.DIRT_COLOR, r, 0)
-					actor_row.append([
-						s,
-						r
-					])
-				elif row == Track.ROAD:
-					pygame.draw.rect(s, Track.ROAD_COLOR, r, 0)
-					actor_row.append([
-						s,
-						r
-					])
-			self.track_actors.append(actor_row)
-	
-	def draw(self, surface):
-		for x in range(Track.ACTOR_LIMIT):
-			for y in range(Track.ACTOR_LIMIT):
-				surface.blit(
-					self.track_actors[y][x][0], 
+				elif column == Track.DIRT:
+					actor_row.append(pygame.image.load(Track.DIRT_IMAGE))
+				elif column == Track.ROAD:
+					actor_row.append(pygame.image.load(Track.ROAD_IMAGE))
+			self.actors.append(actor_row)
+		occurence_counter = 0
+		for y in range(Track.TRACK_SIZE):
+			for x in range(Track.TRACK_SIZE):
+				if self.spawnpoints[y][x] != 0:
+					self.spawn_positions[occurence_counter] = (
+						x*int(self.actor_dimensions[0]) + Car.WIDTH,
+						y*int(self.actor_dimensions[1]) + Car.HEIGHT
+					)
+					occurence_counter += 1
+		# Blitting the track images to the track surface for greater performance.
+		for y in range(Track.TRACK_SIZE):
+			for x in range(Track.TRACK_SIZE):
+				self.surface.blit(
+					self.actors[y][x], 
 					[x*int(self.actor_dimensions[0]), y*int(self.actor_dimensions[1])]
 				)
+
+	def draw(self, surface):
+		surface.blit(self.surface, (0, 0))
 			
