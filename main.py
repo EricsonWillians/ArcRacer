@@ -4,6 +4,7 @@ from PyGameWidgets import core, widgets
 from cfg import options
 import actor
 import ui
+import ai
 import track
 import os
 
@@ -29,14 +30,24 @@ class SceneManager:
 
 class GameManager:
 
-	def __init__(self):
+	def __init__(self, loaded_tracks):
+		self.loaded_tracks = loaded_tracks
+		self.current_track = self.loaded_tracks[0]
 		self.default()
 
 	def set_number_of_players(self, n):
 		self.number_of_players = n
 		self.players = [
-			actor.Player(actor.Car(test_track.spawn_positions[n], "gfx/player{_n}.png".format(_n=n))) for n in range(1, self.number_of_players+1)
+			actor.Player(actor.Car(self.current_track.spawn_positions[n], "gfx/player{_n}.png".format(_n=n)), self.current_track) for n in range(1, self.number_of_players+1)
 		]
+		if self.number_of_humans == 1:
+			self.bots = [
+				ai.Bot(p, self.current_track) for p in self.players if p != self.players[0]
+			]
+		elif self.number_of_humans == 2:
+			self.bots = [
+				ai.Bot(p, self.current_track) for p in self.players if p != self.players[0] and p != self.players[1]
+			]
 
 	def set_number_of_humans(self, n):
 		self.number_of_humans = n
@@ -65,11 +76,10 @@ if __name__ == "__main__":
 
 	# Game-specific
 
-	loaded_tracks = [t for t in tracks]
-	test_track = track.Track(loaded_tracks[0])
+	loaded_tracks = [track.Track(t) for t in tracks]
 	
 	sm = SceneManager()
-	gm = GameManager()
+	gm = GameManager(loaded_tracks)
 
 	main_menu = ui.MainMenu()
 	race_options = ui.RaceOptions()
@@ -83,7 +93,7 @@ if __name__ == "__main__":
 		elif sm.scene == SceneManager.RACE_OPTIONS:
 			race_options.draw(screen)
 		elif sm.scene == SceneManager.GAME:
-			test_track.draw(screen)
+			gm.current_track.draw(screen)
 			[p.car.draw(screen) for p in gm.players]
 		elif sm.scene == SceneManager.PAUSE:
 			pause_screen.draw(screen)
@@ -132,8 +142,7 @@ if __name__ == "__main__":
 		redraw()
 		if sm.scene == SceneManager.GAME:
 			for n in range(gm.number_of_humans):
-				print(n)
-				gm.players[n].move(test_track)
+				gm.players[n].move()
 		for e in pygame.event.get():
 			if e.type == pygame.QUIT:
 				sys.exit()
@@ -159,4 +168,6 @@ if __name__ == "__main__":
 				intercept_in_game(e)
 			elif sm.scene == SceneManager.PAUSE:
 				intercept_in_pause(e)
-		
+		if sm.scene == SceneManager.GAME:
+			for bot in gm.bots:
+				bot.think()

@@ -43,14 +43,15 @@ class Car(Actor):
 
 class Player:
 
-	def __init__(self, car):
+	def __init__(self, car, track):
 		self.set_car(car)
 		self.states = [False for x in range(4)]
+		self.track = track
 
 	def set_car(self, car):
 		self.car = car
 
-	def move(self, track):
+	def move(self):
 		dx = math.cos(math.radians(self.car.angle))
 		dy = math.sin(math.radians(self.car.angle))
 		self.car.pos = [
@@ -89,9 +90,9 @@ class Player:
 		# Track-related
 		# Here comes anything from the track that affects the movement, 
 		# like different types of ground and obstacles.
-		for p in track.ground_positions.keys():
-			if pygame.Rect(p, (track.actor_dimensions[0], track.actor_dimensions[1])).collidepoint(self.car.pos[0], self.car.pos[1]):
-				if track.ground_positions[p] == track.DIRT:
+		for p in self.track.ground_positions.keys():
+			if pygame.Rect(p, (self.track.actor_dimensions[0], self.track.actor_dimensions[1])).collidepoint(self.car.pos[0], self.car.pos[1]):
+				if self.track.ground_positions[p] == self.track.DIRT:
 					if self.states[0]:
 						deaccelerate(1, Car.DIRT_MININUM_SPEED, Car.DIRT_DEACCELERATION_RATE)
 					if self.states[1]:
