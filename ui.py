@@ -29,20 +29,22 @@ class MainMenu:
 class RaceOptions:
 
     def __init__(self):
-        self.panel = widgets.Panel(core.Grid((9, 9), (options["RESOLUTION"][0], options["RESOLUTION"][1])), None, None, (0, 0))
+        self.panel = widgets.Panel(core.Grid((6, 9), (options["RESOLUTION"][0], options["RESOLUTION"][1])), None, None, (0, 0))
         self.panel.set_color(core.BLACK)
         self.title = widgets.TextLabel(self.panel, (0, 0), core.Text("Race Options", 64, core.WHITE, "arial", True, True))
         self.title.text.font.set_bold(True)
-        self.title.set_span((8, 1))
+        self.title.set_span((5, 1))
         self.components = [
-            widgets.TextButton(self.panel, (3, 3), core.Text("Start Race", 32)),
-            widgets.TextLabel(self.panel, (3, 4), core.Text("Players:", 32)),
-            widgets.OptionChooser(self.panel, (5, 4), [str(n) for n in range(1, 6)]),
-            widgets.TextButton(self.panel, (3, 5), core.Text("Return", 32))
+            widgets.TextButton(self.panel, (1, 3), core.Text("Start Race", 32)),
+            widgets.TextLabel(self.panel, (1, 4), core.Text("Players", 32)),
+            widgets.OptionChooser(self.panel, (3, 4), [str(n) for n in range(1, 6)]),
+            widgets.TextLabel(self.panel, (1, 5), core.Text("Humans", 32)),
+            widgets.OptionChooser(self.panel, (3, 5), [str(n) for n in range(1, 3)]),
+            widgets.TextButton(self.panel, (1, 6), core.Text("Return", 32))
         ]
         [c.set_color(core.BLACK) for c in self.components]
-        [c.set_span((1, 0)) for c in self.components if not isinstance(c, widgets.OptionChooser)]
-        [c.set_border(core.WHITE, 16) for c in self.components if not isinstance(c, widgets.OptionChooser)]
+        [c.set_span((1, 0)) for c in self.components]
+        [c.set_border(core.WHITE, 16) for c in self.components]
 
     def draw(self, surface):
         self.panel.draw(surface)
