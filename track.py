@@ -1,5 +1,4 @@
 import pygame
-from tracks import test
 from actor import Actor, Car
 from cfg import options
 
@@ -13,10 +12,11 @@ class Track:
 	DIRT_IMAGE = "gfx/dirt.png"
 	ROAD_IMAGE = "gfx/road.png"
 
-	def __init__(self):
-		self.ground_data = test.track_ground_data
-		self.spawnpoints = test.track_spawnpoints
-		self.waypoints = test.track_waypoints
+	def __init__(self, track):
+		self.track = track
+		self.ground_data = self.track.ground_data
+		self.spawnpoints = self.track.spawnpoints
+		self.waypoints = self.track.waypoints
 		self.actors = []
 		self.ground_positions = {}
 		self.spawn_positions = {}

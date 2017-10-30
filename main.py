@@ -1,32 +1,25 @@
 import sys
 import pygame
-from PyGameWidgets import core
+from PyGameWidgets import core, widgets
 from cfg import options
 import actor
 import ui
 import track
+import os
 
-# Widget border example.
+dir = os.path.dirname(os.path.abspath(__file__))
+sys.path.append(dir)
+
+from tracks import tracks
 
 print("Initializing game with the following options: \n{opt}".format(opt=options))
-
-WINDOW_WIDTH = options["RESOLUTION"][0]
-WINDOW_HEIGHT = options["RESOLUTION"][1]
-pygame.init()
-pygame.font.init
-if options["FULLSCREEN"]:
-	screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT), pygame.FULLSCREEN)
-else:
-	screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
-clock = pygame.time.Clock()
-FPS = 60
-running = True
 
 class SceneManager:
 
 	MAIN_MENU = 0
-	GAME = 1
-	PAUSE = 2
+	RACE_OPTIONS = 1
+	GAME = 2
+	PAUSE = 3
 
 	def __init__(self):
 		self.scene = 0
@@ -35,23 +28,45 @@ class SceneManager:
 		self.scene = scene
 
 if __name__ == "__main__":
-	sm = SceneManager()
-	tracks = []
-	number_of_humans = 2
-	number_of_players = 5
-	max_player_slot = 5
-	test_track = track.Track()
+
+	# Pygame
+
+	WINDOW_WIDTH = options["RESOLUTION"][0]
+	WINDOW_HEIGHT = options["RESOLUTION"][1]
+	pygame.init()
+	pygame.font.init
+	if options["FULLSCREEN"]:
+		screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT), pygame.FULLSCREEN)
+	else:
+		screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
+	clock = pygame.time.Clock()
+	FPS = 60
+	running = True
+
+	# Game-specific
+
+	loaded_tracks = [t for t in tracks]
+	test_track = track.Track(loaded_tracks[0])
 	players = [
 		actor.Player(actor.Car(test_track.spawn_positions[n], "gfx/player{_n}.png".format(_n=n))) for n in range(1, 6)
 	]
-	print(players)
+
+	sm = SceneManager()
+	number_of_humans = 2
+	number_of_players = 5
+	max_player_slot = 5
+
 	main_menu = ui.MainMenu()
+	race_options = ui.RaceOptions()
 	pause_screen = ui.PauseScreen()
+
 	def redraw():
 		pygame.display.flip()
 		screen.fill(core.BLACK)
 		if sm.scene == SceneManager.MAIN_MENU:
 			main_menu.draw(screen)
+		elif sm.scene == SceneManager.RACE_OPTIONS:
+			race_options.draw(screen)
 		elif sm.scene == SceneManager.GAME:
 			test_track.draw(screen)
 			[p.car.draw(screen) for p in players]
@@ -87,6 +102,11 @@ if __name__ == "__main__":
 		for n in range(number_of_humans, max_player_slot):
 			pass
 
+	def intercept_in_race_options(e):
+		if e.type == pygame.KEYDOWN:
+			if e.key == pygame.K_ESCAPE:
+				sm.change_scene(SceneManager.MAIN_MENU)
+
 	def intercept_in_pause(e):
 		if e.type == pygame.KEYDOWN:
 			if e.key == pygame.K_ESCAPE:
@@ -102,8 +122,15 @@ if __name__ == "__main__":
 			if e.type == pygame.QUIT:
 				sys.exit()
 			if sm.scene == SceneManager.MAIN_MENU:
-				main_menu.buttons[0].on_click(e, sm.change_scene, SceneManager.GAME)
+				main_menu.buttons[0].on_click(e, sm.change_scene, SceneManager.RACE_OPTIONS)
 				main_menu.buttons[1].on_click(e, lambda: sys.exit())
+			elif sm.scene == SceneManager.RACE_OPTIONS:
+				intercept_in_race_options(e)
+				for c in race_options.components:
+					if isinstance(c, widgets.OptionChooser):
+						c.activate(e)
+				race_options.components[0].on_click(e, sm.change_scene, SceneManager.GAME)
+				race_options.components[3].on_click(e, sm.change_scene, SceneManager.MAIN_MENU)
 			elif sm.scene == SceneManager.GAME:
 				intercept_in_game(e)
 			elif sm.scene == SceneManager.PAUSE:
