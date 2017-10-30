@@ -11,12 +11,13 @@ class Bot:
 		self.track.choose_waypoint_path()
 		self.number_of_waypoints = len(self.track.waypoint_positions.keys())
 		self.get_waypoint_angle()
+		self.previous_angle = self.new_angle
 
 	def get_waypoint_angle(self):
 		self.dx = self.track.waypoint_positions[self.current_waypoint][0] - self.player.car.pos[0]
 		self.dy = self.track.waypoint_positions[self.current_waypoint][1] - self.player.car.pos[1]
 		self.ratio = math.atan2(self.dy, self.dx)
-		self.angle = -self.ratio * (180/math.pi)
+		self.new_angle = -self.ratio * (180/math.pi)
 
 	def think(self):
 		if pygame.Rect(self.player.car.pos, self.player.car.dimensions).collidepoint(
@@ -28,12 +29,13 @@ class Bot:
 			if self.current_waypoint == self.number_of_waypoints:
 				self.current_waypoint = 0
 			self.current_waypoint += 1
+			self.previous_angle = self.new_angle
 		self.get_waypoint_angle()
-		if self.angle > self.player.car.angle:
-			self.player.car.angle += self.player.car.steering_speed
-		else:
+		if self.player.car.angle > self.new_angle:
 			self.player.car.angle -= self.player.car.steering_speed
-		print(self.angle, self.player.car.angle, self.player.car.gear)
+		else:
+			self.player.car.angle += self.player.car.steering_speed
+		print(self.new_angle, self.player.car.angle, self.previous_angle)
 		self.player.car.rotate()
 		self.player.move()   
 		
