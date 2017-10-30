@@ -31,8 +31,10 @@ class Car(Actor):
 		Actor.__init__(self, pos, self.dimensions, image_path)
 		self.speed = 0
 		self.steering_speed = 6
-		self.max_speed = 4
-		self.acceleration_rate = 0.1
+		self.max_speed = 6
+		self.acceleration_rate = 0.0
+		self.gear = 0
+		self.gear_changing_delay = 45
 		self.angle = 0
 	
 	def rotate(self):
@@ -47,6 +49,7 @@ class Player:
 		self.set_car(car)
 		self.states = [False for x in range(4)]
 		self.track = track
+		self.clock = 0
 
 	def set_car(self, car):
 		self.car = car
@@ -58,17 +61,45 @@ class Player:
 			self.car.pos[0] + dx * self.car.speed,
 			self.car.pos[1] - dy * self.car.speed,
 		]
-		def deaccelerate(d, _min, accel):
-			if d:
+		if self.car.gear == 0:
+			self.car.acceleration_rate = 0
+		elif self.car.gear == 1:
+			self.car.acceleration_rate = 0.05
+		elif self.car.gear == 2:
+			self.car.acceleration_rate = 0.010
+		elif self.car.gear == 3:
+			self.car.acceleration_rate = 0.025
+		elif self.car.gear == 4:
+			self.car.acceleration_rate = 0.050
+		elif self.car.gear == 5:
+			self.car.acceleration_rate = 0.075
+		elif self.car.gear == 6:
+			self.car.acceleration_rate = 0.1
+		elif self.car.gear == 7:
+			self.car.acceleration_rate = 0.125
+		def deaccelerate(_dir, _min, accel):
+			def reduce_gear():
+				if self.clock == self.car.gear_changing_delay: 
+					if self.car.gear > 0:
+						self.car.gear -= 1
+					self.clock = 0
+				self.clock += 1
+			if _dir: # 0 = UP, 1 = DOWN
 				if self.car.speed > _min:
 					self.car.speed -= accel
+					reduce_gear()
 			else:
 				if self.car.speed < _min:
 					self.car.speed += accel
+					reduce_gear()
 		# Up
 		if self.states[0]:
 			if self.car.speed < self.car.max_speed:
 				self.car.speed += self.car.acceleration_rate
+				if self.clock == self.car.gear_changing_delay: 
+					self.car.gear += 1
+					self.clock = 0
+				self.clock += 1
 		else:
 			# When you release the up key, 
 			# the car deaccelerates / comes to a minimal value.
@@ -77,6 +108,10 @@ class Player:
 		if self.states[1]:
 			if self.car.speed > -self.car.max_speed:
 				self.car.speed -= self.car.acceleration_rate / 2
+				if self.clock == self.car.gear_changing_delay: 
+					self.car.gear += 1
+					self.clock = 0
+				self.clock += 1
 		else:
 			deaccelerate(0, 0, self.car.acceleration_rate)
 		# Left

@@ -66,7 +66,6 @@ class Track:
 
 	def choose_waypoint_path(self):
 		self.current_waypoint_path = randint(0, len(self.waypoints)-1)
-		print(self.waypoint_positions)
 		for y in range(Track.TRACK_SIZE):
 			for x in range(Track.TRACK_SIZE):
 				if self.waypoints[self.current_waypoint_path][y][x] != 0:
