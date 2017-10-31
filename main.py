@@ -175,7 +175,7 @@ if __name__ == "__main__":
 				intercept_in_pause(e)
 		if sm.scene == SceneManager.RACE_OPTIONS:
 			race_options.components[2].current_value = str(gm.number_of_players)
-			race_options.components[2].text = core.Text(gm.number_of_players, 32)
+			race_options.components[2].text = core.Text(gm.number_of_players, ui.RACE_OPTIONS_MENU_SIZE, ui.RACE_OPTIONS_MENU_COLOR, ui.RACE_OPTIONS_MENU_FONT, ui.RACE_OPTIONS_MENU_BOLD, ui.RACE_OPTIONS_MENU_ITALIC)
 			race_options.components[2].update_text()
 		elif sm.scene == SceneManager.GAME:
 			for bot in gm.bots:

@@ -2,21 +2,29 @@ from PyGameWidgets import core
 from PyGameWidgets import widgets
 from cfg import options
 
+TITLE_SIZE = 64
+MENU_SIZE = 32
 MENU_COLOR = core.WHITE
 MENU_FONT = "monospace"
 MENU_BOLD = True
+MENU_ITALIC = False
+RACE_OPTIONS_MENU_SIZE = 22
+RACE_OPTIONS_MENU_COLOR = core.WHITE
+RACE_OPTIONS_MENU_FONT = "monospace"
+RACE_OPTIONS_MENU_BOLD = True
+RACE_OPTIONS_MENU_ITALIC = False
 
 class MainMenu:
 
     def __init__(self):
         self.panel = widgets.Panel(core.Grid((3, 9), (options["RESOLUTION"][0], options["RESOLUTION"][1])), None, None, (0, 0))
         self.panel.set_color(core.BLACK)
-        self.title = widgets.TextLabel(self.panel, (0, 0), core.Text("Rect Racer", 64, MENU_COLOR, MENU_FONT, MENU_BOLD, True))
+        self.title = widgets.TextLabel(self.panel, (0, 0), core.Text("Rect Racer", TITLE_SIZE, MENU_COLOR, MENU_FONT, MENU_BOLD, True))
         self.title.text.font.set_bold(True)
         self.title.set_span((2, 1))
         self.buttons = [
-            widgets.TextButton(self.panel, (1, 3), core.Text("Single Player", 32, MENU_COLOR, MENU_FONT, MENU_BOLD)),
-            widgets.TextButton(self.panel, (1, 4), core.Text("Exit", 32, MENU_COLOR, MENU_FONT, MENU_BOLD))
+            widgets.TextButton(self.panel, (1, 3), core.Text("Single Player", MENU_SIZE, MENU_COLOR, MENU_FONT, MENU_BOLD)),
+            widgets.TextButton(self.panel, (1, 4), core.Text("Exit", MENU_SIZE, MENU_COLOR, MENU_FONT, MENU_BOLD))
         ]
         [b.set_color(core.BLACK) for b in self.buttons]
         [b.set_border(core.WHITE, 16) for b in self.buttons]
@@ -29,18 +37,18 @@ class MainMenu:
 class RaceOptions:
 
     def __init__(self):
-        self.panel = widgets.Panel(core.Grid((6, 9), (options["RESOLUTION"][0], options["RESOLUTION"][1])), None, None, (0, 0))
+        self.panel = widgets.Panel(core.Grid((6, 12), (options["RESOLUTION"][0], options["RESOLUTION"][1])), None, None, (0, 0))
         self.panel.set_color(core.BLACK)
-        self.title = widgets.TextLabel(self.panel, (0, 0), core.Text("Race Options", 64, core.WHITE, "arial", True, True))
+        self.title = widgets.TextLabel(self.panel, (0, 0), core.Text("Race Options", TITLE_SIZE, RACE_OPTIONS_MENU_COLOR, RACE_OPTIONS_MENU_FONT, RACE_OPTIONS_MENU_BOLD, RACE_OPTIONS_MENU_ITALIC))
         self.title.text.font.set_bold(True)
         self.title.set_span((5, 1))
         self.components = [
-            widgets.TextButton(self.panel, (1, 3), core.Text("Start Race", 32)),
-            widgets.TextLabel(self.panel, (1, 4), core.Text("Players", 32)),
+            widgets.TextButton(self.panel, (1, 3), core.Text("Start Race", RACE_OPTIONS_MENU_SIZE, RACE_OPTIONS_MENU_COLOR, RACE_OPTIONS_MENU_FONT, RACE_OPTIONS_MENU_BOLD, RACE_OPTIONS_MENU_ITALIC)),
+            widgets.TextLabel(self.panel, (1, 4), core.Text("Players", RACE_OPTIONS_MENU_SIZE, RACE_OPTIONS_MENU_COLOR, RACE_OPTIONS_MENU_FONT, RACE_OPTIONS_MENU_BOLD, RACE_OPTIONS_MENU_ITALIC)),
             widgets.OptionChooser(self.panel, (3, 4), [str(n) for n in range(1, 6)]),
-            widgets.TextLabel(self.panel, (1, 5), core.Text("Humans", 32)),
+            widgets.TextLabel(self.panel, (1, 5), core.Text("Humans", RACE_OPTIONS_MENU_SIZE, RACE_OPTIONS_MENU_COLOR, RACE_OPTIONS_MENU_FONT, RACE_OPTIONS_MENU_BOLD, RACE_OPTIONS_MENU_ITALIC)),
             widgets.OptionChooser(self.panel, (3, 5), [str(n) for n in range(1, 3)]),
-            widgets.TextButton(self.panel, (1, 6), core.Text("Return", 32))
+            widgets.TextButton(self.panel, (1, 6), core.Text("Return", RACE_OPTIONS_MENU_SIZE, RACE_OPTIONS_MENU_COLOR, RACE_OPTIONS_MENU_FONT, RACE_OPTIONS_MENU_BOLD, RACE_OPTIONS_MENU_ITALIC))
         ]
         [c.set_color(core.BLACK) for c in self.components]
         [c.set_span((1, 0)) for c in self.components]
