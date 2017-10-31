@@ -1,6 +1,6 @@
-# Rect Racer
-An open-source top-down racing game.
+# ArcRacer
+An open-source top-down racing game written in the Python Programming Language.
 
 ### Contributors
 
-* José Falero
+* José Falero (Python import-related problems)
