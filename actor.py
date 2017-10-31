@@ -30,7 +30,7 @@ class Car(Actor):
 		]
 		Actor.__init__(self, pos, self.dimensions, image_path)
 		self.speed = 0
-		self.steering_speed = 6
+		self.steering_speed = 1.8
 		self.max_speed = 6
 		self.acceleration_rate = 0.0
 		self.gear = 0

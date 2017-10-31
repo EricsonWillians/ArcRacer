@@ -170,4 +170,4 @@ if __name__ == "__main__":
 				intercept_in_pause(e)
 		if sm.scene == SceneManager.GAME:
 			for bot in gm.bots:
-				bot.think()
+				bot.think()	
