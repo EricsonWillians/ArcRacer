@@ -5,12 +5,12 @@ from cfg import options
 TITLE_SIZE = 64
 MENU_SIZE = 32
 MENU_COLOR = core.WHITE
-MENU_FONT = "monospace"
+MENU_FONT = "arial"
 MENU_BOLD = True
 MENU_ITALIC = False
 RACE_OPTIONS_MENU_SIZE = 22
 RACE_OPTIONS_MENU_COLOR = core.WHITE
-RACE_OPTIONS_MENU_FONT = "monospace"
+RACE_OPTIONS_MENU_FONT = "arial"
 RACE_OPTIONS_MENU_BOLD = True
 RACE_OPTIONS_MENU_ITALIC = False
 
@@ -19,7 +19,7 @@ class MainMenu:
     def __init__(self):
         self.panel = widgets.Panel(core.Grid((3, 9), (options["RESOLUTION"][0], options["RESOLUTION"][1])), None, None, (0, 0))
         self.panel.set_color(core.BLACK)
-        self.title = widgets.TextLabel(self.panel, (0, 0), core.Text("Rect Racer", TITLE_SIZE, MENU_COLOR, MENU_FONT, MENU_BOLD, True))
+        self.title = widgets.TextLabel(self.panel, (0, 0), core.Text("ArcRacer", TITLE_SIZE, MENU_COLOR, MENU_FONT, MENU_BOLD, True))
         self.title.text.font.set_bold(True)
         self.title.set_span((2, 1))
         self.buttons = [
@@ -39,7 +39,7 @@ class RaceOptions:
     def __init__(self):
         self.panel = widgets.Panel(core.Grid((6, 12), (options["RESOLUTION"][0], options["RESOLUTION"][1])), None, None, (0, 0))
         self.panel.set_color(core.BLACK)
-        self.title = widgets.TextLabel(self.panel, (0, 0), core.Text("Race Options", TITLE_SIZE, RACE_OPTIONS_MENU_COLOR, RACE_OPTIONS_MENU_FONT, RACE_OPTIONS_MENU_BOLD, RACE_OPTIONS_MENU_ITALIC))
+        self.title = widgets.TextLabel(self.panel, (0, 0), core.Text("Race Options", TITLE_SIZE, RACE_OPTIONS_MENU_COLOR, RACE_OPTIONS_MENU_FONT, RACE_OPTIONS_MENU_BOLD, MENU_ITALIC))
         self.title.text.font.set_bold(True)
         self.title.set_span((5, 1))
         self.components = [
