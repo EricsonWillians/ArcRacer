@@ -22,6 +22,8 @@ class Car(Actor):
 	HEIGHT = 18
 	DIRT_DEACCELERATION_RATE = 0.2
 	DIRT_MININUM_SPEED = 1.5
+	REAR_ACCELERATION_RATE = 0.010
+	MAXIMUM_GEARS = 6
 
 	def __init__(self, pos, image_path):
 		self.dimensions = [
@@ -32,6 +34,7 @@ class Car(Actor):
 		self.speed = 0
 		self.steering_speed = 1.8
 		self.max_speed = 6
+		self.rear_max_speed = 1.5
 		self.acceleration_rate = 0.0
 		self.gear = 0
 		self.gear_changing_delay = 45
@@ -54,7 +57,7 @@ class Player:
 	def set_car(self, car):
 		self.car = car
 
-	def move(self):
+	def move(self, handicap=0):
 		dx = math.cos(math.radians(self.car.angle))
 		dy = math.sin(math.radians(self.car.angle))
 		self.car.pos = [
@@ -75,8 +78,6 @@ class Player:
 			self.car.acceleration_rate = 0.075
 		elif self.car.gear == 6:
 			self.car.acceleration_rate = 0.1
-		elif self.car.gear == 7:
-			self.car.acceleration_rate = 0.125
 		def deaccelerate(_dir, _min, accel):
 			def reduce_gear():
 				if self.clock == self.car.gear_changing_delay: 
@@ -95,9 +96,10 @@ class Player:
 		# Up
 		if self.states[0]:
 			if self.car.speed < self.car.max_speed:
-				self.car.speed += self.car.acceleration_rate
+				self.car.speed += self.car.acceleration_rate + handicap
 				if self.clock == self.car.gear_changing_delay: 
-					self.car.gear += 1
+					if self.car.gear <= Car.MAXIMUM_GEARS:
+						self.car.gear += 1
 					self.clock = 0
 				self.clock += 1
 		else:
@@ -106,12 +108,8 @@ class Player:
 			deaccelerate(1, 0, self.car.acceleration_rate)
 		# Down
 		if self.states[1]:
-			if self.car.speed > -self.car.max_speed:
-				self.car.speed -= self.car.acceleration_rate / 2
-				if self.clock == self.car.gear_changing_delay: 
-					self.car.gear += 1
-					self.clock = 0
-				self.clock += 1
+			if self.car.speed > -self.car.rear_max_speed:
+				self.car.speed -= Car.REAR_ACCELERATION_RATE
 		else:
 			deaccelerate(0, 0, self.car.acceleration_rate)
 		# Left

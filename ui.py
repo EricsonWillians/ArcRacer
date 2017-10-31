@@ -11,7 +11,7 @@ class MainMenu:
     def __init__(self):
         self.panel = widgets.Panel(core.Grid((3, 9), (options["RESOLUTION"][0], options["RESOLUTION"][1])), None, None, (0, 0))
         self.panel.set_color(core.BLACK)
-        self.title = widgets.TextLabel(self.panel, (0, 0), core.Text("Rect Racer", 64, core.WHITE, "arial", True, True))
+        self.title = widgets.TextLabel(self.panel, (0, 0), core.Text("Rect Racer", 64, MENU_COLOR, MENU_FONT, MENU_BOLD, True))
         self.title.text.font.set_bold(True)
         self.title.set_span((2, 1))
         self.buttons = [

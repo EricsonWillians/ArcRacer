@@ -4,6 +4,7 @@ from PyGameWidgets import core, widgets
 from cfg import options
 import actor
 import ui
+import hud
 import ai
 import track
 import os
@@ -83,6 +84,7 @@ if __name__ == "__main__":
 
 	main_menu = ui.MainMenu()
 	race_options = ui.RaceOptions()
+	game_hud = hud.HUD()
 	pause_screen = ui.PauseScreen()
 
 	def redraw():
@@ -95,6 +97,7 @@ if __name__ == "__main__":
 		elif sm.scene == SceneManager.GAME:
 			gm.current_track.draw(screen)
 			[p.car.draw(screen) for p in gm.players]
+			game_hud.draw(screen)
 		elif sm.scene == SceneManager.PAUSE:
 			pause_screen.draw(screen)
 
@@ -171,3 +174,13 @@ if __name__ == "__main__":
 		if sm.scene == SceneManager.GAME:
 			for bot in gm.bots:
 				bot.think()	
+			game_hud.player1_info_panel_labels[1].set_text(
+				core.Text("{0:.2f}".format(round(gm.players[0].car.speed, 2)), game_hud.FONT_SIZE, game_hud.COLOR, game_hud.FONT, game_hud.BOLD, game_hud.ITALIC)
+			)
+			game_hud.player1_info_panel_labels[3].set_text(
+				core.Text(str(gm.players[0].car.gear), game_hud.FONT_SIZE, game_hud.COLOR, game_hud.FONT, game_hud.BOLD, game_hud.ITALIC)
+			)
+			game_hud.player1_info_panel_labels[5].set_text(
+				core.Text("{0:.2f}".format(round(gm.players[0].car.angle, 2)), game_hud.FONT_SIZE, game_hud.COLOR, game_hud.FONT, game_hud.BOLD, game_hud.ITALIC)
+			)
+			

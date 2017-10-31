@@ -5,7 +5,7 @@ from random import randint
 
 class Track:
 
-	TRACK_SIZE = 16
+	SIZE = 16
 
 	DIRT = 1
 	ROAD = 2
@@ -44,8 +44,8 @@ class Track:
 					)
 					actor_row.append(img)
 			self.actors.append(actor_row)
-		for y in range(Track.TRACK_SIZE):
-			for x in range(Track.TRACK_SIZE):
+		for y in range(Track.SIZE):
+			for x in range(Track.SIZE):
 				if self.ground_data[y][x] != 0:
 					self.ground_positions[(
 						x*int(self.actor_dimensions[0]),
@@ -57,8 +57,8 @@ class Track:
 						y*int(self.actor_dimensions[1]) + Car.HEIGHT
 					)
 		# Blitting the track images to the track surface for greater performance.
-		for y in range(Track.TRACK_SIZE):
-			for x in range(Track.TRACK_SIZE):
+		for y in range(Track.SIZE):
+			for x in range(Track.SIZE):
 				self.surface.blit(
 					self.actors[y][x], 
 					[x*int(self.actor_dimensions[0]), y*int(self.actor_dimensions[1])]
@@ -66,8 +66,8 @@ class Track:
 
 	def choose_waypoint_path(self):
 		self.current_waypoint_path = randint(0, len(self.waypoints)-1)
-		for y in range(Track.TRACK_SIZE):
-			for x in range(Track.TRACK_SIZE):
+		for y in range(Track.SIZE):
+			for x in range(Track.SIZE):
 				if self.waypoints[self.current_waypoint_path][y][x] != 0:
 					self.waypoint_positions[self.waypoints[self.current_waypoint_path][y][x]] = (
 						x*int(self.actor_dimensions[0]) + Car.WIDTH,

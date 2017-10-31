@@ -4,9 +4,12 @@ from cfg import options
 
 class Bot:
 
+	DEFAULT_HANDICAP = 0.20
+
 	def __init__(self, player, track):
 		self.player = player
 		self.track = track
+		self.handicap = Bot.DEFAULT_HANDICAP
 		self.current_waypoint = 1
 		self.previous_waypoint = 1
 		self.player.states[0] = True
@@ -34,7 +37,7 @@ class Bot:
 				pygame.Rect((
 					self.track.waypoint_positions[self.current_waypoint][0], 
 					self.track.waypoint_positions[self.current_waypoint][1]),
-					(self.track.TRACK_SIZE, self.track.TRACK_SIZE)
+					(self.track.SIZE, self.track.SIZE)
 				)
 			):
 			self.track.choose_waypoint_path()
@@ -45,5 +48,5 @@ class Bot:
 		self.get_current_waypoint_angle()
 		self.player.car.angle = self.current_angle
 		self.player.car.rotate()
-		self.player.move()   
+		self.player.move(self.handicap)   
 		
