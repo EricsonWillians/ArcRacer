@@ -52,6 +52,8 @@ class GameManager:
 
 	def set_number_of_humans(self, n):
 		self.number_of_humans = n
+		if self.number_of_humans == 2 and self.number_of_players == 1:
+			self.set_number_of_players(2)
 
 	def default(self):
 		self.number_of_humans = 1
@@ -84,7 +86,7 @@ if __name__ == "__main__":
 
 	main_menu = ui.MainMenu()
 	race_options = ui.RaceOptions()
-	game_hud = hud.HUD()
+	game_hud = hud.HUD(gm)
 	pause_screen = ui.PauseScreen()
 
 	def redraw():
@@ -171,16 +173,31 @@ if __name__ == "__main__":
 				intercept_in_game(e)
 			elif sm.scene == SceneManager.PAUSE:
 				intercept_in_pause(e)
-		if sm.scene == SceneManager.GAME:
+		if sm.scene == SceneManager.RACE_OPTIONS:
+			race_options.components[2].text = core.Text(gm.number_of_players, 32)
+			race_options.components[2].update_text()
+		elif sm.scene == SceneManager.GAME:
 			for bot in gm.bots:
 				bot.think()	
-			game_hud.player1_info_panel_labels[1].set_text(
+			# Updating the text of the player info panels.
+			game_hud.player1_info_panel_labels[2].set_text(
 				core.Text("{0:.2f}".format(round(gm.players[0].car.speed, 2)), game_hud.FONT_SIZE, game_hud.COLOR, game_hud.FONT, game_hud.BOLD, game_hud.ITALIC)
 			)
-			game_hud.player1_info_panel_labels[3].set_text(
+			game_hud.player1_info_panel_labels[4].set_text(
 				core.Text(str(gm.players[0].car.gear), game_hud.FONT_SIZE, game_hud.COLOR, game_hud.FONT, game_hud.BOLD, game_hud.ITALIC)
 			)
-			game_hud.player1_info_panel_labels[5].set_text(
+			game_hud.player1_info_panel_labels[6].set_text(
 				core.Text("{0:.2f}".format(round(gm.players[0].car.angle, 2)), game_hud.FONT_SIZE, game_hud.COLOR, game_hud.FONT, game_hud.BOLD, game_hud.ITALIC)
 			)
+			if gm.number_of_humans == 2:
+				game_hud.player2_info_panel_labels[2].set_text(
+					core.Text("{0:.2f}".format(round(gm.players[1].car.speed, 2)), game_hud.FONT_SIZE, game_hud.COLOR, game_hud.FONT, game_hud.BOLD, game_hud.ITALIC)
+				)
+				game_hud.player2_info_panel_labels[4].set_text(
+					core.Text(str(gm.players[1].car.gear), game_hud.FONT_SIZE, game_hud.COLOR, game_hud.FONT, game_hud.BOLD, game_hud.ITALIC)
+				)
+				game_hud.player2_info_panel_labels[6].set_text(
+					core.Text("{0:.2f}".format(round(gm.players[1].car.angle, 2)), game_hud.FONT_SIZE, game_hud.COLOR, game_hud.FONT, game_hud.BOLD, game_hud.ITALIC)
+				)
+
 			
