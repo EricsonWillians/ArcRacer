@@ -2,7 +2,7 @@ import pygame
 
 options = {
     # Screen
-    "RESOLUTION": (1280, 800),
+    "RESOLUTION": (1280, 800), # 16:10
     "FULLSCREEN": False,
     # Key bindings
     "PLAYER1_ACCELERATE": pygame.K_UP,

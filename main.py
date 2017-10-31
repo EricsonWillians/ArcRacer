@@ -168,7 +168,7 @@ if __name__ == "__main__":
 					gm.set_number_of_humans,
 					int(race_options.components[4].current_value)
 				)
-				race_options.components[5].on_click(e, sm.change_scene, SceneManager.MAIN_MENU)
+				race_options.components[11].on_click(e, sm.change_scene, SceneManager.MAIN_MENU)
 			elif sm.scene == SceneManager.GAME:
 				intercept_in_game(e)
 			elif sm.scene == SceneManager.PAUSE:

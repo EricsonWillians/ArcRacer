@@ -5,8 +5,10 @@ from cfg import options
 class HUD:
 
     SIZE = 8
-    PLAYER1_INFO_PANEL_LABELS = 7
+    PLAYER_INFO_PANEL_LABELS = 7
     COLOR = core.WHITE
+    BORDER_COLOR = (255, 255, 255, 150)
+    BORDER_WIDTH = 1
     FONT = "monospace"
     FONT_SIZE = 16
     BOLD = False
@@ -15,7 +17,7 @@ class HUD:
     def __init__(self, gm):
         self.gm = gm
         self.panel = widgets.Panel(core.Grid((HUD.SIZE, HUD.SIZE), (options["RESOLUTION"][0], options["RESOLUTION"][1])), None, None, (0, 0))
-        self.player1_info_panel = widgets.Panel(core.Grid((2, HUD.PLAYER1_INFO_PANEL_LABELS), self.panel.grid.cell_size), self.panel, (0, 0), None)
+        self.player1_info_panel = widgets.Panel(core.Grid((2, HUD.PLAYER_INFO_PANEL_LABELS), self.panel.grid.cell_size), self.panel, (0, 0), None)
         self.player1_info_panel_labels = [
             widgets.TextLabel(
                 self.player1_info_panel, 
@@ -53,7 +55,7 @@ class HUD:
                 core.Text("")
             )
         ]
-        self.player2_info_panel = widgets.Panel(core.Grid((2, HUD.PLAYER1_INFO_PANEL_LABELS), self.panel.grid.cell_size), self.panel, (1, 0), None)
+        self.player2_info_panel = widgets.Panel(core.Grid((2, HUD.PLAYER_INFO_PANEL_LABELS), self.panel.grid.cell_size), self.panel, (1, 0), None)
         self.player2_info_panel_labels = [
             widgets.TextLabel(
                 self.player2_info_panel, 
@@ -92,10 +94,10 @@ class HUD:
             )
         ]
         self.player1_info_panel_labels[0].set_span((1, 0))
-        [label.set_border((255, 255, 255, 150), 1) for label in self.player1_info_panel_labels if label.text.value != "Player1"]
+        [label.set_border(HUD.BORDER_COLOR, HUD.BORDER_WIDTH) for label in self.player1_info_panel_labels if label.text.value != "Player1"]
         [label.set_color(core.TRANSPARENT) for label in self.player1_info_panel_labels]
         self.player2_info_panel_labels[0].set_span((1, 0))
-        [label.set_border((255, 255, 255, 150), 1) for label in self.player2_info_panel_labels if label.text.value != "Player2"]
+        [label.set_border(HUD.BORDER_COLOR, HUD.BORDER_WIDTH) for label in self.player2_info_panel_labels if label.text.value != "Player2"]
         [label.set_color(core.TRANSPARENT) for label in self.player2_info_panel_labels]
 
     def draw(self, surface):

@@ -48,10 +48,18 @@ class RaceOptions:
             widgets.OptionChooser(self.panel, (3, 4), [str(n) for n in range(1, 6)]),
             widgets.TextLabel(self.panel, (1, 5), core.Text("Humans", RACE_OPTIONS_MENU_SIZE, RACE_OPTIONS_MENU_COLOR, RACE_OPTIONS_MENU_FONT, RACE_OPTIONS_MENU_BOLD, RACE_OPTIONS_MENU_ITALIC)),
             widgets.OptionChooser(self.panel, (3, 5), [str(n) for n in range(1, 3)]),
-            widgets.TextButton(self.panel, (1, 6), core.Text("Return", RACE_OPTIONS_MENU_SIZE, RACE_OPTIONS_MENU_COLOR, RACE_OPTIONS_MENU_FONT, RACE_OPTIONS_MENU_BOLD, RACE_OPTIONS_MENU_ITALIC))
+            widgets.TextLabel(self.panel, (1, 6), core.Text("Difficulty", RACE_OPTIONS_MENU_SIZE, RACE_OPTIONS_MENU_COLOR, RACE_OPTIONS_MENU_FONT, RACE_OPTIONS_MENU_BOLD, RACE_OPTIONS_MENU_ITALIC)),
+            widgets.OptionChooser(self.panel, (3, 6), ["Coming soon"]),
+            widgets.TextLabel(self.panel, (1, 7), core.Text("Laps", RACE_OPTIONS_MENU_SIZE, RACE_OPTIONS_MENU_COLOR, RACE_OPTIONS_MENU_FONT, RACE_OPTIONS_MENU_BOLD, RACE_OPTIONS_MENU_ITALIC)),
+            widgets.OptionChooser(self.panel, (3, 7), ["Coming soon"]),
+            widgets.TextLabel(self.panel, (1, 8), core.Text("Track", RACE_OPTIONS_MENU_SIZE, RACE_OPTIONS_MENU_COLOR, RACE_OPTIONS_MENU_FONT, RACE_OPTIONS_MENU_BOLD, RACE_OPTIONS_MENU_ITALIC)),
+            widgets.OptionChooser(self.panel, (3, 8), ["Coming soon"]),
+            widgets.TextButton(self.panel, (1, 9), core.Text("Return", RACE_OPTIONS_MENU_SIZE, RACE_OPTIONS_MENU_COLOR, RACE_OPTIONS_MENU_FONT, RACE_OPTIONS_MENU_BOLD, RACE_OPTIONS_MENU_ITALIC))
         ]
         [c.set_color(core.BLACK) for c in self.components]
-        [c.set_span((1, 0)) for c in self.components]
+        [
+            c.set_span((1, 0)) if c != self.components[0] and c != self.components[len(self.components)-1] else c.set_span((3, 0)) for c in self.components
+        ]
         [c.set_border(core.WHITE, 16) for c in self.components]
 
     def draw(self, surface):
