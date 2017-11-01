@@ -55,11 +55,28 @@ class GameManager:
 		if self.number_of_humans == 2 and self.number_of_players == 1:
 			self.set_number_of_players(2)
 
+	def set_difficulty(self, d):
+		if d == "Easy":
+			self.difficulty = 0.50
+		elif d == "Normal":
+			self.difficulty = 1.75
+		elif d == "Hard":
+			self.difficulty = 3.50
+		elif d == "Insane":
+			self.difficulty = 3.75
+		elif d == "Arcturian":
+			self.difficulty = 4.00
+
+	def set_laps(self, l):
+		self.laps = int(l)
+
 	def default(self):
 		self.number_of_humans = 1
 		self.number_of_players = 1
 		self.max_player_slot = 5
 		self.set_number_of_players(self.number_of_players)
+		self.set_difficulty("Normal")
+		self.set_laps(15)
 
 if __name__ == "__main__":
 
@@ -119,6 +136,7 @@ if __name__ == "__main__":
 				elif e.key == options["PAUSE"]:
 					sm.change_scene(SceneManager.PAUSE)
 				elif e.key == pygame.K_ESCAPE:
+					gm.default()
 					sm.change_scene(SceneManager.MAIN_MENU)
 			elif e.type == pygame.KEYUP:	
 				if e.key == options["PLAYER{_n}_ACCELERATE".format(_n=n+1)]:
@@ -145,15 +163,12 @@ if __name__ == "__main__":
 	while (running):
 		clock.tick(FPS)
 		redraw()
-		if sm.scene == SceneManager.GAME:
-			for n in range(gm.number_of_humans):
-				gm.players[n].move()
 		for e in pygame.event.get():
 			if e.type == pygame.QUIT:
 				sys.exit()
 			if sm.scene == SceneManager.MAIN_MENU:
-				main_menu.buttons[0].on_click(e, sm.change_scene, SceneManager.RACE_OPTIONS)
-				main_menu.buttons[1].on_click(e, lambda: sys.exit())
+				main_menu.buttons[2].on_click(e, sm.change_scene, SceneManager.RACE_OPTIONS)
+				main_menu.buttons[3].on_click(e, lambda: sys.exit())
 			elif sm.scene == SceneManager.RACE_OPTIONS:
 				intercept_in_race_options(e)
 				for c in race_options.components:
@@ -168,6 +183,14 @@ if __name__ == "__main__":
 					gm.set_number_of_humans,
 					int(race_options.components[4].current_value)
 				)
+				race_options.components[6].on_change(e, 
+					gm.set_difficulty,
+					race_options.components[6].current_value
+				)
+				race_options.components[8].on_change(e, 
+					gm.set_laps,
+					int(race_options.components[8].current_value)
+				)
 				race_options.components[11].on_click(e, sm.change_scene, SceneManager.MAIN_MENU)
 			elif sm.scene == SceneManager.GAME:
 				intercept_in_game(e)
@@ -178,8 +201,10 @@ if __name__ == "__main__":
 			race_options.components[2].text = core.Text(gm.number_of_players, ui.RACE_OPTIONS_MENU_SIZE, ui.RACE_OPTIONS_MENU_COLOR, ui.RACE_OPTIONS_MENU_FONT, ui.RACE_OPTIONS_MENU_BOLD, ui.RACE_OPTIONS_MENU_ITALIC)
 			race_options.components[2].update_text()
 		elif sm.scene == SceneManager.GAME:
+			for n in range(gm.number_of_humans):
+				gm.players[n].move()
 			for bot in gm.bots:
-				bot.think()	
+				bot.think(gm.difficulty)	
 			# Updating the text of the player info panels.
 			game_hud.player1_info_panel_labels[2].set_text(
 				core.Text("{0:.2f}".format(round(gm.players[0].car.speed, 2)), game_hud.FONT_SIZE, game_hud.COLOR, game_hud.FONT, game_hud.BOLD, game_hud.ITALIC)
