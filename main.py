@@ -213,7 +213,10 @@ if __name__ == "__main__":
 				core.Text(str(gm.players[0].car.gear), game_hud.FONT_SIZE, game_hud.COLOR, game_hud.FONT, game_hud.BOLD, game_hud.ITALIC)
 			)
 			game_hud.player1_info_panel_labels[6].set_text(
-				core.Text("{0:.2f}".format(round(gm.players[0].car.angle, 2)), game_hud.FONT_SIZE, game_hud.COLOR, game_hud.FONT, game_hud.BOLD, game_hud.ITALIC)
+				core.Text(str(gm.players[0].position), game_hud.FONT_SIZE, game_hud.COLOR, game_hud.FONT, game_hud.BOLD, game_hud.ITALIC)
+			)
+			game_hud.player1_info_panel_labels[8].set_text(
+				core.Text(str(gm.players[0].current_lap), game_hud.FONT_SIZE, game_hud.COLOR, game_hud.FONT, game_hud.BOLD, game_hud.ITALIC)
 			)
 			if gm.number_of_humans == 2:
 				game_hud.player2_info_panel_labels[2].set_text(
@@ -223,7 +226,11 @@ if __name__ == "__main__":
 					core.Text(str(gm.players[1].car.gear), game_hud.FONT_SIZE, game_hud.COLOR, game_hud.FONT, game_hud.BOLD, game_hud.ITALIC)
 				)
 				game_hud.player2_info_panel_labels[6].set_text(
-					core.Text("{0:.2f}".format(round(gm.players[1].car.angle, 2)), game_hud.FONT_SIZE, game_hud.COLOR, game_hud.FONT, game_hud.BOLD, game_hud.ITALIC)
+					core.Text(str(gm.players[1].position), game_hud.FONT_SIZE, game_hud.COLOR, game_hud.FONT, game_hud.BOLD, game_hud.ITALIC)
 				)
+				game_hud.player2_info_panel_labels[8].set_text(
+					core.Text(str(gm.players[1].current_lap), game_hud.FONT_SIZE, game_hud.COLOR, game_hud.FONT, game_hud.BOLD, game_hud.ITALIC)
+				)
+				
 
 			

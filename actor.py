@@ -1,5 +1,6 @@
 import pygame
 import math
+from cfg import options
 
 class Actor:
 	
@@ -20,10 +21,11 @@ class Car(Actor):
 	
 	WIDTH = 24
 	HEIGHT = 18
-	DIRT_DEACCELERATION_RATE = 0.2
-	DIRT_MININUM_SPEED = 1.5
+	NEBULOSA_DEACCELERATION_RATE = 0.2
+	NEBULOSA_MININUM_SPEED = 1.5
 	REAR_ACCELERATION_RATE = 0.010
 	MAXIMUM_GEARS = 6
+	OFF_SCREEN_BOUNCING_ACCELERATION = 100
 
 	def __init__(self, pos, image_path):
 		self.dimensions = [
@@ -52,7 +54,18 @@ class Player:
 		self.set_car(car)
 		self.states = [False for x in range(4)]
 		self.track = track
+		self.position = 1
+		self.current_lap = 1
 		self.clock = 0
+		self.checkpoints_cleared = {}
+		for a in track.actor_positions.keys():
+			if track.actor_positions[a] in [
+				self.track.ARCCHECKPOINT0,
+				self.track.ARCCHECKPOINT1,
+				self.track.ARCCHECKPOINT2,
+				self.track.ARCCHECKPOINT3
+			]:
+				self.checkpoints_cleared[a] = False
 
 	def set_car(self, car):
 		self.car = car
@@ -96,7 +109,7 @@ class Player:
 		# Up
 		if self.states[0]:
 			if self.car.speed < self.car.max_speed:
-				self.car.speed += self.car.acceleration_rate + handicap
+				self.car.speed += self.car.acceleration_rate + handicap * 15
 				if self.clock == self.car.gear_changing_delay: 
 					if self.car.gear <= Car.MAXIMUM_GEARS:
 						self.car.gear += 1
@@ -120,13 +133,33 @@ class Player:
 		if self.states[3]:
 			self.car.angle -= self.car.steering_speed
 			self.car.rotate()
-		# Track-related
+		if (self.car.pos[0] - self.car.dimensions[0]) > options["RESOLUTION"][0] or (self.car.pos[1] - self.car.dimensions[1]) > options["RESOLUTION"][1] or self.car.pos[0] < 0 or self.car.pos[1] < 0:
+			self.car.speed -= (self.car.acceleration_rate + handicap) * Car.OFF_SCREEN_BOUNCING_ACCELERATION
+		# Track-related movement interference
 		# Here comes anything from the track that affects the movement, 
 		# like different types of ground and obstacles.
 		for p in self.track.ground_positions.keys():
-			if pygame.Rect(p, (self.track.actor_dimensions[0], self.track.actor_dimensions[1])).collidepoint(self.car.pos[0], self.car.pos[1]):
-				if self.track.ground_positions[p] == self.track.DIRT:
+			if pygame.Rect(p, (self.track.ground_tile_dimensions[0], self.track.ground_tile_dimensions[1])).colliderect(pygame.Rect(self.car.pos, self.car.dimensions)):
+				if self.track.ground_positions[p] == self.track.NEBULOSA:
 					if self.states[0]:
-						deaccelerate(1, Car.DIRT_MININUM_SPEED, Car.DIRT_DEACCELERATION_RATE)
+						deaccelerate(1, Car.NEBULOSA_MININUM_SPEED, Car.NEBULOSA_DEACCELERATION_RATE)
 					if self.states[1]:
-						deaccelerate(0, -Car.DIRT_MININUM_SPEED, Car.DIRT_DEACCELERATION_RATE)
+						deaccelerate(0, -Car.NEBULOSA_MININUM_SPEED, Car.NEBULOSA_DEACCELERATION_RATE)
+		# Non-movement-related track matters that also require collision detection.
+		# Each time the player's car collides with a checkpoint,
+		# it marks that checkpoint as cleared. When the player finally comes to the finnish line,
+		# all checkpoints are set to False and the lap counter is increased.
+		for p in self.checkpoints_cleared.keys():
+			if pygame.Rect(p, (self.track.actor_dimensions[0], self.track.actor_dimensions[1])).colliderect(pygame.Rect(self.car.pos, self.car.dimensions)):
+				self.checkpoints_cleared[p] = True
+		for p in self.track.actor_positions.keys():
+			if pygame.Rect(p, (self.track.actor_dimensions[0], self.track.actor_dimensions[1])).colliderect(pygame.Rect(self.car.pos, self.car.dimensions)):
+				if self.track.actor_positions[p] == self.track.ARCFINISH:
+					if all(x for x in self.checkpoints_cleared.values()):
+						self.current_lap += 1
+						self.checkpoints_cleared = dict.fromkeys(self.checkpoints_cleared, False)
+						
+		
+
+
+						

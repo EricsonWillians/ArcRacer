@@ -4,7 +4,7 @@ from cfg import options
 
 class HUD:
 
-    SIZE = 8
+    SIZE = 6
     PLAYER_INFO_PANEL_LABELS = 7
     COLOR = core.WHITE
     BORDER_COLOR = (255, 255, 255, 150)
@@ -47,15 +47,25 @@ class HUD:
             widgets.TextLabel(
                 self.player1_info_panel, 
                 (0, 3), 
-                core.Text("Angle: ", HUD.FONT_SIZE, HUD.COLOR, HUD.FONT, HUD.BOLD, HUD.ITALIC)
+                core.Text("Position: ", HUD.FONT_SIZE, HUD.COLOR, HUD.FONT, HUD.BOLD, HUD.ITALIC)
             ),
             widgets.TextLabel(
                 self.player1_info_panel, 
                 (1, 3), 
                 core.Text("")
+            ),
+            widgets.TextLabel(
+                self.player1_info_panel, 
+                (0, 4), 
+                core.Text("Lap: ", HUD.FONT_SIZE, HUD.COLOR, HUD.FONT, HUD.BOLD, HUD.ITALIC)
+            ),
+            widgets.TextLabel(
+                self.player1_info_panel, 
+                (1, 4), 
+                core.Text("")
             )
         ]
-        self.player2_info_panel = widgets.Panel(core.Grid((2, HUD.PLAYER_INFO_PANEL_LABELS), self.panel.grid.cell_size), self.panel, (1, 0), None)
+        self.player2_info_panel = widgets.Panel(core.Grid((2, HUD.PLAYER_INFO_PANEL_LABELS), self.panel.grid.cell_size), self.panel, (HUD.SIZE-1, 0), None)
         self.player2_info_panel_labels = [
             widgets.TextLabel(
                 self.player2_info_panel, 
@@ -85,11 +95,21 @@ class HUD:
             widgets.TextLabel(
                 self.player2_info_panel, 
                 (0, 3), 
-                core.Text("Angle: ", HUD.FONT_SIZE, HUD.COLOR, HUD.FONT, HUD.BOLD, HUD.ITALIC)
+                core.Text("Position: ", HUD.FONT_SIZE, HUD.COLOR, HUD.FONT, HUD.BOLD, HUD.ITALIC)
             ),
             widgets.TextLabel(
                 self.player2_info_panel, 
                 (1, 3), 
+                core.Text("")
+            ),
+            widgets.TextLabel(
+                self.player2_info_panel, 
+                (0, 4), 
+                core.Text("Lap: ", HUD.FONT_SIZE, HUD.COLOR, HUD.FONT, HUD.BOLD, HUD.ITALIC)
+            ),
+            widgets.TextLabel(
+                self.player2_info_panel, 
+                (1, 4), 
                 core.Text("")
             )
         ]
