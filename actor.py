@@ -50,14 +50,18 @@ class Car(Actor):
 
 class Player:
 
-	def __init__(self, car, track):
+	def __init__(self, car, track, name):
 		self.set_car(car)
 		self.states = [False for x in range(4)]
 		self.track = track
+		self.name = name
 		self.position = 1
 		self.current_lap = 1
 		self.clock = 0
-		self.checkpoints_cleared = {}
+		self.checkpoints_cleared = 0
+		self.has_updated_cleared_checkpoint_count_this_lap = False
+		self.checkpoint_logic = False
+		self.checkpoints_cleared_in_current_lap = {}
 		for a in track.actor_positions.keys():
 			if track.actor_positions[a] in [
 				self.track.ARCCHECKPOINT0,
@@ -65,7 +69,7 @@ class Player:
 				self.track.ARCCHECKPOINT2,
 				self.track.ARCCHECKPOINT3
 			]:
-				self.checkpoints_cleared[a] = False
+				self.checkpoints_cleared_in_current_lap[a] = False
 
 	def set_car(self, car):
 		self.car = car
@@ -149,16 +153,18 @@ class Player:
 		# Each time the player's car collides with a checkpoint,
 		# it marks that checkpoint as cleared. When the player finally comes to the finnish line,
 		# all checkpoints are set to False and the lap counter is increased.
-		for p in self.checkpoints_cleared.keys():
+		for p in self.checkpoints_cleared_in_current_lap.keys():
 			if pygame.Rect(p, (self.track.actor_dimensions[0], self.track.actor_dimensions[1])).colliderect(pygame.Rect(self.car.pos, self.car.dimensions)):
-				self.checkpoints_cleared[p] = True
+				if not self.checkpoints_cleared_in_current_lap[p]:
+					self.checkpoints_cleared += 1
+				self.checkpoints_cleared_in_current_lap[p] = True					
 		for p in self.track.actor_positions.keys():
 			if pygame.Rect(p, (self.track.actor_dimensions[0], self.track.actor_dimensions[1])).colliderect(pygame.Rect(self.car.pos, self.car.dimensions)):
 				if self.track.actor_positions[p] == self.track.ARCFINISH:
-					if all(x for x in self.checkpoints_cleared.values()):
+					if all(x for x in self.checkpoints_cleared_in_current_lap.values()):
 						self.current_lap += 1
-						self.checkpoints_cleared = dict.fromkeys(self.checkpoints_cleared, False)
-						
+						self.checkpoints_cleared_in_current_lap = dict.fromkeys(self.checkpoints_cleared_in_current_lap, False)
+						self.has_updated_cleared_checkpoint_count_this_lap = False
 		
 
 

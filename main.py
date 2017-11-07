@@ -35,11 +35,34 @@ class GameManager:
 		self.loaded_tracks = loaded_tracks
 		self.current_track = self.loaded_tracks[0]
 		self.default()
+		self.checkpoints_cleared_of_all_players = {}
+		self.racing_positions = []
+
+	def update_racing_positions(self):
+		for p in self.players:
+			self.checkpoints_cleared_of_all_players[p.name] = p.checkpoints_cleared
+		self.racing_positions = sorted(
+			self.checkpoints_cleared_of_all_players.keys(), 
+			key=lambda k: self.checkpoints_cleared_of_all_players[k], 
+			reverse=True
+		)
+
+	def get_player_racing_position_by_name(self, name):
+		for p in self.players:
+			if p.name == name:
+				return self.racing_positions.index(name)+1 # We can't have a 0 racing position.
 
 	def set_number_of_players(self, n):
 		self.number_of_players = n
 		self.players = [
-			actor.Player(actor.Car(self.current_track.spawn_positions[n], "gfx/player{_n}.png".format(_n=n)), self.current_track) for n in range(1, self.number_of_players+1)
+			actor.Player(
+				actor.Car(
+					self.current_track.spawn_positions[n], 
+					"gfx/player{_n}.png".format(_n=n)
+				), 
+				self.current_track,
+				'P'+str(n)
+			) for n in range(1, self.number_of_players+1)
 		]
 		if self.number_of_humans == 1:
 			self.bots = [
@@ -205,6 +228,7 @@ if __name__ == "__main__":
 				gm.players[n].move()
 			for bot in gm.bots:
 				bot.think(gm.difficulty)	
+			gm.update_racing_positions()
 			# Updating the text of the player info panels.
 			game_hud.player1_info_panel_labels[2].set_text(
 				core.Text("{0:.2f}".format(round(gm.players[0].car.speed, 2)), game_hud.FONT_SIZE, game_hud.COLOR, game_hud.FONT, game_hud.BOLD, game_hud.ITALIC)
@@ -213,7 +237,7 @@ if __name__ == "__main__":
 				core.Text(str(gm.players[0].car.gear), game_hud.FONT_SIZE, game_hud.COLOR, game_hud.FONT, game_hud.BOLD, game_hud.ITALIC)
 			)
 			game_hud.player1_info_panel_labels[6].set_text(
-				core.Text(str(gm.players[0].position), game_hud.FONT_SIZE, game_hud.COLOR, game_hud.FONT, game_hud.BOLD, game_hud.ITALIC)
+				core.Text(str(gm.get_player_racing_position_by_name("P1")), game_hud.FONT_SIZE, game_hud.COLOR, game_hud.FONT, game_hud.BOLD, game_hud.ITALIC)
 			)
 			game_hud.player1_info_panel_labels[8].set_text(
 				core.Text(str(gm.players[0].current_lap), game_hud.FONT_SIZE, game_hud.COLOR, game_hud.FONT, game_hud.BOLD, game_hud.ITALIC)
@@ -226,7 +250,7 @@ if __name__ == "__main__":
 					core.Text(str(gm.players[1].car.gear), game_hud.FONT_SIZE, game_hud.COLOR, game_hud.FONT, game_hud.BOLD, game_hud.ITALIC)
 				)
 				game_hud.player2_info_panel_labels[6].set_text(
-					core.Text(str(gm.players[1].position), game_hud.FONT_SIZE, game_hud.COLOR, game_hud.FONT, game_hud.BOLD, game_hud.ITALIC)
+					core.Text(str(gm.get_player_racing_position_by_name("P2")), game_hud.FONT_SIZE, game_hud.COLOR, game_hud.FONT, game_hud.BOLD, game_hud.ITALIC)
 				)
 				game_hud.player2_info_panel_labels[8].set_text(
 					core.Text(str(gm.players[1].current_lap), game_hud.FONT_SIZE, game_hud.COLOR, game_hud.FONT, game_hud.BOLD, game_hud.ITALIC)

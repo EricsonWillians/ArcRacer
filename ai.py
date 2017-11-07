@@ -45,5 +45,5 @@ class Bot:
 		self.get_current_waypoint_angle()
 		self.player.car.angle = self.current_angle
 		self.player.car.rotate()
-		self.player.move(handicap)   
+		self.player.move()   
 		
