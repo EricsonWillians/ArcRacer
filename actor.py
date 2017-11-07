@@ -113,7 +113,7 @@ class Player:
 		# Up
 		if self.states[0]:
 			if self.car.speed < self.car.max_speed:
-				self.car.speed += self.car.acceleration_rate + handicap * 15
+				self.car.speed += self.car.acceleration_rate + handicap
 				if self.clock == self.car.gear_changing_delay: 
 					if self.car.gear <= Car.MAXIMUM_GEARS:
 						self.car.gear += 1
