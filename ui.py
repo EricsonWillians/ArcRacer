@@ -40,7 +40,7 @@ class MainMenu:
 
 class RaceOptions:
 
-    def __init__(self):
+    def __init__(self, gm):
         self.panel = widgets.Panel(core.Grid((6, 12), (options["RESOLUTION"][0], options["RESOLUTION"][1])), None, None, (0, 0))
         self.panel.set_color(core.BLACK)
         self.title = widgets.TextLabel(self.panel, (0, 0), core.Text("Race Options", TITLE_SIZE, RACE_OPTIONS_MENU_COLOR, RACE_OPTIONS_MENU_FONT, RACE_OPTIONS_MENU_BOLD, MENU_ITALIC))
@@ -58,7 +58,7 @@ class RaceOptions:
             widgets.TextLabel(self.panel, (1, 7), core.Text("Laps", RACE_OPTIONS_MENU_SIZE, RACE_OPTIONS_MENU_COLOR, RACE_OPTIONS_MENU_FONT, RACE_OPTIONS_MENU_BOLD, RACE_OPTIONS_MENU_ITALIC)),
             widgets.OptionChooser(self.panel, (3, 7), ["5", "10", "15", "20", "25", "30", "35", "40", "45", "50"], 2),
             widgets.TextLabel(self.panel, (1, 8), core.Text("Track", RACE_OPTIONS_MENU_SIZE, RACE_OPTIONS_MENU_COLOR, RACE_OPTIONS_MENU_FONT, RACE_OPTIONS_MENU_BOLD, RACE_OPTIONS_MENU_ITALIC)),
-            widgets.OptionChooser(self.panel, (3, 8), ["Coming soon"]),
+            widgets.OptionChooser(self.panel, (3, 8), gm.get_track_list()),
             widgets.TextButton(self.panel, (1, 9), core.Text("Return", RACE_OPTIONS_MENU_SIZE, RACE_OPTIONS_MENU_COLOR, RACE_OPTIONS_MENU_FONT, RACE_OPTIONS_MENU_BOLD, RACE_OPTIONS_MENU_ITALIC))
         ]
         [c.set_color(core.BLACK) for c in self.components]

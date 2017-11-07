@@ -29,6 +29,7 @@ class Track:
 
 	def __init__(self, track):
 		self.track = track
+		self.name = self.track.name
 		self.ground_data = self.track.ground_data	
 		self.waypoints = self.track.waypoints
 		self.spawnpoints = self.track.spawnpoints	

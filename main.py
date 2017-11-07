@@ -35,8 +35,12 @@ class GameManager:
 		self.loaded_tracks = loaded_tracks
 		self.current_track = self.loaded_tracks[0]
 		self.default()
-		self.checkpoints_cleared_of_all_players = {}
-		self.racing_positions = []
+
+	def get_track_list(self):
+		path = "tracks"
+		tracks = [f[:-3] for f in os.listdir(path) if os.path.isfile(os.path.join(path, f))]
+		tracks.remove("__init__")
+		return tracks
 
 	def update_racing_positions(self):
 		for p in self.players:
@@ -93,11 +97,19 @@ class GameManager:
 	def set_laps(self, l):
 		self.laps = int(l)
 
+	def set_track(self, track_name):
+		for t in self.loaded_tracks:
+			if t.name == track_name:
+				self.current_track = t
+
 	def default(self):
 		self.number_of_humans = 1
 		self.number_of_players = 1
 		self.max_player_slot = 5
 		self.set_number_of_players(self.number_of_players)
+		self.checkpoints_cleared_of_all_players = {}
+		self.racing_positions = []
+		self.update_racing_positions()
 		self.set_difficulty("Normal")
 		self.set_laps(15)
 
@@ -123,9 +135,8 @@ if __name__ == "__main__":
 	
 	sm = SceneManager()
 	gm = GameManager(loaded_tracks)
-
 	main_menu = ui.MainMenu()
-	race_options = ui.RaceOptions()
+	race_options = ui.RaceOptions(gm)
 	game_hud = hud.HUD(gm)
 	pause_screen = ui.PauseScreen()
 
@@ -213,6 +224,10 @@ if __name__ == "__main__":
 				race_options.components[8].on_change(e, 
 					gm.set_laps,
 					int(race_options.components[8].current_value)
+				)
+				race_options.components[10].on_change(e, 
+					gm.set_track,
+					race_options.components[10].current_value
 				)
 				race_options.components[11].on_click(e, sm.change_scene, SceneManager.MAIN_MENU)
 			elif sm.scene == SceneManager.GAME:
