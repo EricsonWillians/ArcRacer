@@ -4,6 +4,7 @@ import tkinter.filedialog as fd
 import sys
 import os
 import pickle
+from collections import OrderedDict
 
 class App(tk.Tk):
 
@@ -27,12 +28,11 @@ class App(tk.Tk):
 			filetypes=(("Track File", "*.trk"), ("All Files", "*.*")),
 			title="Choose a track file to open."
 		)
-		print(name)
 		try:
-			with open(name, 'r') as _file:
-				print(_file.read())
-		except:
+			self.file = pickle.load(open(name, 'rb'))
+		except Exception as e:
 			print("No file exists")
+			print(e)
 
 	def save_file(self):
 		f = fd.asksaveasfile(
@@ -66,80 +66,154 @@ class App(tk.Tk):
 		[self.content_selection_frame.columnconfigure(n, weight=1) for n in range(4)]
 		self.content_selection_frame.grid(row=0, column=0, sticky=tk.NW+tk.NE+tk.SW+tk.SE+tk.W+tk.E+tk.N+tk.S)
 		self.content_selection_states = [False, False, False, False]
-		self.ground_data_editor_button = tk.Button(self.content_selection_frame, text="Ground Data", 
-			command=self.compose_ground_data_editor
-		)
-		self.ground_data_editor_button.grid(row=0, column=0, sticky=tk.NW+tk.NE+tk.SW+tk.SE+tk.W+tk.E+tk.N+tk.S)
-		self.waypoints_button = tk.Button(self.content_selection_frame, text="Waypoints", 
-			command=None
-		)
-		self.waypoints_button.grid(row=0, column=1, sticky=tk.NW+tk.NE+tk.SW+tk.SE+tk.W+tk.E+tk.N+tk.S)
-		self.spawnpoints_button = tk.Button(self.content_selection_frame, text="Spawnpoints",
-			command=None
-		)
-		self.spawnpoints_button.grid(row=0, column=2, sticky=tk.NW+tk.NE+tk.SW+tk.SE+tk.W+tk.E+tk.N+tk.S)
-		self.actorpoints_button = tk.Button(self.content_selection_frame, text="Actorpoints", 
-			command=None
-		)
-		self.actorpoints_button.grid(row=0, column=3, sticky=tk.NW+tk.NE+tk.SW+tk.SE+tk.W+tk.E+tk.N+tk.S)
-		self.content_frame = tk.Frame(self)
-		self.content_frame.rowconfigure(0, weight=1)
-		self.content_frame.columnconfigure(0, weight=1)
+		self.content_names_in_file = {
+			0: "GROUND_DATA",
+			1: "WAYPOINTS",
+			2: "SPAWNPOINTS",
+			3: "ACTORPOINTS"
+		}
+		self.editor_buttons = [
+			tk.Button(self.content_selection_frame, text="Ground Data", 
+				command=self.compose_ground_data_editor
+			),
+			tk.Button(self.content_selection_frame, text="Waypoints", 
+				command=None
+			),
+			tk.Button(self.content_selection_frame, text="Spawnpoints",
+				command=self.compose_spawn_data_editor
+			),
+			tk.Button(self.content_selection_frame, text="Actorpoints", 
+				command=self.compose_actor_data_editor
+			)
+		]
+		[self.editor_buttons[n].grid(row=0, column=n, sticky=tk.NW+tk.NE+tk.SW+tk.SE+tk.W+tk.E+tk.N+tk.S) for n in range(4)]
+		# Abstracted frames
+		self.content_frames = [
+			tk.Frame(self) for n in range(4) 
+		]
+		[frame.rowconfigure(0, weight=1) for frame in self.content_frames]
+		[frame.columnconfigure(0, weight=1) for frame in self.content_frames]
+		self.simple_data_frames = {}
+		self.simple_data_buttons = {}
+		self.simple_values_boxes = {}
 		
-	def compose_general_values_list(self, frame, _dict):
-		self.values_list_box = tk.Listbox(frame)
-		self.values_list_box.grid(row=0, column=1, sticky=tk.NW+tk.NE+tk.SW+tk.SE+tk.W+tk.E+tk.N+tk.S)
-		[self.values_list_box.insert(0, v) for v in _dict.keys()]
+	def deselect_irrelevant_editors(self, content_selection_state):
+		for i in range(len(self.content_selection_states)):
+			if i != content_selection_state:
+				self.content_selection_states[i] = False
+				self.content_frames[i].grid_remove()
+				self.editor_buttons[i].config(relief="raised")
+
+	# Method that compose the simple data editors,
+	# Which are "Ground Data", "Spawnpoints" and "Actorpoints".
+	# It's a long abstraction, but the code is pretty much the same for all of them, hence my decision.
+	def compose_simple_data_editor(self, content_selection_state, data_values, default_data_value=1):
+		# The data_values dict gets ordered by value.
+		data_values = OrderedDict(sorted(data_values.items(), key=lambda item: item[1], reverse=True))
+		
+		if not self.content_selection_states[content_selection_state]:
+			self.deselect_irrelevant_editors(content_selection_state)
+			self.content_selection_states[content_selection_state] = True
+			self.content_frames[content_selection_state].grid(row=1, column=0, sticky=tk.NW+tk.NE+tk.SW+tk.SE+tk.W+tk.E+tk.N+tk.S)
+			self.editor_buttons[content_selection_state].config(relief="sunken")
+			self.simple_data_frames[content_selection_state] = tk.Frame(self.content_frames[content_selection_state])
+			self.simple_data_frames[content_selection_state].rowconfigure(0, weight=1)
+			[self.simple_data_frames[content_selection_state].columnconfigure(n, weight=1) for n in range(self.track_size)]
+			self.simple_data_frames[content_selection_state].grid(row=0, column=0, sticky=tk.NW+tk.NE+tk.SW+tk.SE+tk.W+tk.E+tk.N+tk.S)
+			
+			self.simple_values_boxes[content_selection_state] = tk.Listbox(self.content_frames[content_selection_state])
+			self.simple_values_boxes[content_selection_state].grid(row=0, column=1, sticky=tk.NW+tk.NE+tk.SW+tk.SE+tk.W+tk.E+tk.N+tk.S)
+			[self.simple_values_boxes[content_selection_state].insert(0, v) for v in data_values.keys()]
+			self.simple_values_boxes[content_selection_state].config(width=0) # Reseting the ListBox width is important to fit the size of each value string.
+			
+			# Defaulting the selection to the first index of the ListBox.
+			# If there's no explicit default value, it defaults to the last value inserted,
+			# with no visual representation, which is misleading.
+			self.simple_values_boxes[content_selection_state].select_set(0)
+			self.simple_values_boxes[content_selection_state].activate(0)
+
+			self.simple_data_buttons[content_selection_state] = []
+			if not self.file[self.content_names_in_file[content_selection_state]]:
+				for c in range(self.track_size):
+					row = []
+					row_data = []
+					for r in range(self.track_size):
+						button = tk.Button(
+							self.simple_data_frames[content_selection_state], 
+							text=default_data_value
+						)
+						button.grid(row=r, column=c, sticky=tk.NW+tk.NE+tk.SW+tk.SE+tk.W+tk.E+tk.N+tk.S)
+						row.append(button)
+						row_data.append(default_data_value)
+					self.simple_data_buttons[content_selection_state].append(row)
+					self.file[self.content_names_in_file[content_selection_state]].append(row_data) 
+			else:
+				for c in range(self.track_size):
+					row = []
+					for r in range(self.track_size):
+						button = tk.Button(
+							self.simple_data_frames[content_selection_state], 
+							text=self.file[self.content_names_in_file[content_selection_state]][c][r]
+						)
+						button.grid(row=r, column=c, sticky=tk.NW+tk.NE+tk.SW+tk.SE+tk.W+tk.E+tk.N+tk.S)
+						row.append(button)
+					self.simple_data_buttons[content_selection_state].append(row)
+			def save_alteration_within_the_matrix(b, r, c):
+				self.file[self.content_names_in_file[content_selection_state]][r][c] = b["text"]
+			for c in range(self.track_size):
+				row = []
+				for r in range(self.track_size):
+					b = self.simple_data_buttons[content_selection_state][r][c]
+					b.config(command=lambda b=b, r=r, c=c: [
+						b.config(	
+							text=data_values[self.simple_values_boxes[content_selection_state].get(tk.ACTIVE)]
+						),
+						save_alteration_within_the_matrix(b, r, c)
+					])
+		else:
+			self.content_selection_states[content_selection_state] = False
+			self.content_frames[content_selection_state].grid_remove()
+			self.editor_buttons[content_selection_state].config(relief="raised")
 
 	def compose_ground_data_editor(self):
 		self.ground_data_values = {
 			"Nebulosa": 1,
 			"Arcpath": 2
 		}
-		if not self.content_selection_states[0]:
-			self.content_selection_states[0] = True
-			self.content_frame.grid(row=1, column=0, sticky=tk.NW+tk.NE+tk.SW+tk.SE+tk.W+tk.E+tk.N+tk.S)
-			self.ground_data_editor_button.config(relief="sunken")
-			self.ground_data_frame = tk.Frame(self.content_frame)
-			self.ground_data_frame.rowconfigure(0, weight=1)
-			[self.ground_data_frame.columnconfigure(n, weight=1) for n in range(self.track_size)]
-			self.ground_data_frame.grid(row=0, column=0, sticky=tk.NW+tk.NE+tk.SW+tk.SE+tk.W+tk.E+tk.N+tk.S)
-			self.compose_general_values_list(self.content_frame, self.ground_data_values)
-			self.ground_data_buttons = []
-			# Have to deal with existent data.
-			if not self.file["GROUND_DATA"]:
-				print("Blah")
-				for c in range(self.track_size):
-					row = []
-					row_data = []
-					for r in range(self.track_size):
-						button = tk.Button(
-							self.ground_data_frame, 
-							text=self.ground_data_values["Nebulosa"]
-						)
-						button.grid(row=r, column=c, sticky=tk.NW+tk.NE+tk.SW+tk.SE+tk.W+tk.E+tk.N+tk.S)
-						row.append(button)
-						row_data.append(self.ground_data_values["Nebulosa"])
-					self.ground_data_buttons.append(row)
-					self.file["GROUND_DATA"].append(row_data) 
-			else:
-				for c in range(self.track_size):
-					row = []
-					for r in range(self.track_size):
-						button = tk.Button(
-							self.ground_data_frame, 
-							text=self.ground_data[c][r]
-						)
-						button.grid(row=r, column=c, sticky=tk.NW+tk.NE+tk.SW+tk.SE+tk.W+tk.E+tk.N+tk.S)
-						row.append(button)
-					self.ground_data_buttons.append(row)
-			for r in self.ground_data_buttons:
-				for b in r:
-					b.config(command=lambda b=b: b.config(text=self.ground_data_values[self.values_list_box.get(tk.ACTIVE)]))
-		else:
-			self.content_selection_states[0] = False
-			self.content_frame.grid_remove()
-			self.ground_data_editor_button.config(relief="raised")
+		self.compose_simple_data_editor(0, # 0, which stands for Ground Data within the selection states.
+			self.ground_data_values, 
+			self.ground_data_values["Nebulosa"]
+		)
+
+	def compose_spawn_data_editor(self):
+		self.spawn_data_values = {
+			# It's somewhat stupid to store data like this,
+			# but the default data structure is a dict, and it's more intuitive for the user.
+			"FIRST": 1, 
+			"SECOND": 2,
+			"THIRD": 3,
+			"FOURTH": 4,
+			"FIFTH": 5
+		}
+		self.compose_simple_data_editor(2, # 2, which stands for Spawnpoints within the selection states.
+			self.spawn_data_values, 
+			0 # The default value is 0 because there's 
+			  # no sense in placing spawnpoints everywhere on the grid.
+		)
+
+	def compose_actor_data_editor(self):
+		self.actor_data_values = {
+			"ARCFINISH": 1, 
+			"ARCCHECKPOINT_UP": 2,
+			"ARCCHECKPOINT_DOWN": 3,
+			"ARCCHECKPOINT_LEFT": 4,
+			"ARCCHECKPOINT_RIGHT": 5
+		}
+		self.compose_simple_data_editor(3, # 3, which stands for Actorpoints within the selection states.
+			self.actor_data_values, 
+			0 # The default value is 0 because there's also 
+			  # no sense in placing actors everywhere on the grid by default.
+		)
 
 def main():
 	

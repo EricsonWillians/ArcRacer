@@ -14,18 +14,18 @@ class Track:
 	NEBULOSA_IMAGE = "gfx/nebulosa.png"
 	ARCPATH_IMAGE = "gfx/arcpath.png"
 
-	# Entities
+	# Actors
 
 	ARCFINISH = 1
 	ARCFINISH_IMAGE = "gfx/arcfinish.png"
-	ARCCHECKPOINT0 = 2
-	ARCCHECKPOINT0_IMAGE = "gfx/arccheckpoint0.png"
-	ARCCHECKPOINT1 = 3
-	ARCCHECKPOINT1_IMAGE = "gfx/arccheckpoint1.png"
-	ARCCHECKPOINT2 = 4
-	ARCCHECKPOINT2_IMAGE = "gfx/arccheckpoint2.png"
-	ARCCHECKPOINT3 = 5
-	ARCCHECKPOINT3_IMAGE = "gfx/arccheckpoint3.png"
+	ARCCHECKPOINT_UP = 2
+	ARCCHECKPOINT_UP_IMAGE = "gfx/arccheckpoint0.png"
+	ARCCHECKPOINT_DOWN = 3
+	ARCCHECKPOINT_DOWN_IMAGE = "gfx/arccheckpoint1.png"
+	ARCCHECKPOINT_LEFT = 4
+	ARCCHECKPOINT_LEFT_IMAGE = "gfx/arccheckpoint2.png"
+	ARCCHECKPOINT_RIGHT = 5
+	ARCCHECKPOINT_RIGHT_IMAGE = "gfx/arccheckpoint3.png"
 
 	def __init__(self, track):
 		self.track = track
@@ -75,27 +75,27 @@ class Track:
 						self.actor_dimensions
 					)
 					actor_row.append(img)
-				elif column == Track.ARCCHECKPOINT0:
+				elif column == Track.ARCCHECKPOINT_UP:
 					img = pygame.transform.scale(
-						pygame.image.load(Track.ARCCHECKPOINT0_IMAGE), 
+						pygame.image.load(Track.ARCCHECKPOINT_UP_IMAGE), 
 						self.actor_dimensions
 					)
 					actor_row.append(img)
-				elif column == Track.ARCCHECKPOINT1:
+				elif column == Track.ARCCHECKPOINT_DOWN:
 					img = pygame.transform.scale(
-						pygame.image.load(Track.ARCCHECKPOINT1_IMAGE), 
+						pygame.image.load(Track.ARCCHECKPOINT_DOWN_IMAGE), 
 						self.actor_dimensions
 					)
 					actor_row.append(img)
-				elif column == Track.ARCCHECKPOINT2:
+				elif column == Track.ARCCHECKPOINT_LEFT:
 					img = pygame.transform.scale(
-						pygame.image.load(Track.ARCCHECKPOINT2_IMAGE), 
+						pygame.image.load(Track.ARCCHECKPOINT_LEFT_IMAGE), 
 						self.actor_dimensions
 					)
 					actor_row.append(img)
-				elif column == Track.ARCCHECKPOINT3:
+				elif column == Track.ARCCHECKPOINT_RIGHT:
 					img = pygame.transform.scale(
-						pygame.image.load(Track.ARCCHECKPOINT3_IMAGE), 
+						pygame.image.load(Track.ARCCHECKPOINT_RIGHT_IMAGE), 
 						self.actor_dimensions
 					)
 					actor_row.append(img)
