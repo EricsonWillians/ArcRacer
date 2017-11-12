@@ -77,7 +77,7 @@ class App(tk.Tk):
 				command=self.compose_ground_data_editor
 			),
 			tk.Button(self.content_selection_frame, text="Waypoints", 
-				command=None
+				command=self.compose_waypoint_data_editor
 			),
 			tk.Button(self.content_selection_frame, text="Spawnpoints",
 				command=self.compose_spawn_data_editor
@@ -87,93 +87,157 @@ class App(tk.Tk):
 			)
 		]
 		[self.editor_buttons[n].grid(row=0, column=n, sticky=tk.NW+tk.NE+tk.SW+tk.SE+tk.W+tk.E+tk.N+tk.S) for n in range(4)]
-		# Abstracted frames
+		# General frames that hold simple and complex data editors.
+		# There's just a single complex data editor, but, *whatever*, the abstraction is valid 
+		# and allows the implementation of more complex data editors in the future if we decide to get fancier.
 		self.content_frames = [
 			tk.Frame(self) for n in range(4) 
 		]
 		[frame.rowconfigure(0, weight=1) for frame in self.content_frames]
 		[frame.columnconfigure(0, weight=1) for frame in self.content_frames]
+		# Each simple data frame holds a matrix of buttons and a corresponding ListBox widget.
+		# They're all acceced through a "content selection number", hence the "content_names_in_file" variable 
+		# (so that we can link each visual matrix with their corresponding data matrix within the file for storage)
 		self.simple_data_frames = {}
 		self.simple_data_buttons = {}
 		self.simple_values_boxes = {}
+		self.complex_data_frames = {}
+		self.complex_data_selector_buttons = {}
+		self.complex_data_selector_states = {}
+		self.complex_data_selector_controller_buttons = {}
+		self.complex_data_buttons = {}
+		self.complex_values_boxes = {}
 		
-	def deselect_irrelevant_editors(self, content_selection_state):
+	def deselect_irrelevant_editors(self, content_selection_state_index):
 		for i in range(len(self.content_selection_states)):
-			if i != content_selection_state:
+			if i != content_selection_state_index:
 				self.content_selection_states[i] = False
 				self.content_frames[i].grid_remove()
 				self.editor_buttons[i].config(relief="raised")
 
-	# Method that compose the simple data editors,
-	# Which are "Ground Data", "Spawnpoints" and "Actorpoints".
+	# Method that composes the simple data editors,
+	# which are "Ground Data", "Spawnpoints" and "Actorpoints".
 	# It's a long abstraction, but the code is pretty much the same for all of them, hence my decision.
-	def compose_simple_data_editor(self, content_selection_state, data_values, default_data_value=1):
+	def compose_simple_data_editor(self, content_selection_state_index, data_values, default_data_value=1):
 		# The data_values dict gets ordered by value.
 		data_values = OrderedDict(sorted(data_values.items(), key=lambda item: item[1], reverse=True))
 		
-		if not self.content_selection_states[content_selection_state]:
-			self.deselect_irrelevant_editors(content_selection_state)
-			self.content_selection_states[content_selection_state] = True
-			self.content_frames[content_selection_state].grid(row=1, column=0, sticky=tk.NW+tk.NE+tk.SW+tk.SE+tk.W+tk.E+tk.N+tk.S)
-			self.editor_buttons[content_selection_state].config(relief="sunken")
-			self.simple_data_frames[content_selection_state] = tk.Frame(self.content_frames[content_selection_state])
-			self.simple_data_frames[content_selection_state].rowconfigure(0, weight=1)
-			[self.simple_data_frames[content_selection_state].columnconfigure(n, weight=1) for n in range(self.track_size)]
-			self.simple_data_frames[content_selection_state].grid(row=0, column=0, sticky=tk.NW+tk.NE+tk.SW+tk.SE+tk.W+tk.E+tk.N+tk.S)
+		if not self.content_selection_states[content_selection_state_index]:
+			self.deselect_irrelevant_editors(content_selection_state_index)
+			self.content_selection_states[content_selection_state_index] = True
+			self.content_frames[content_selection_state_index].grid(row=1, column=0, sticky=tk.NW+tk.NE+tk.SW+tk.SE+tk.W+tk.E+tk.N+tk.S)
+			self.editor_buttons[content_selection_state_index].config(relief="sunken")
+			self.simple_data_frames[content_selection_state_index] = tk.Frame(self.content_frames[content_selection_state_index])
+			self.simple_data_frames[content_selection_state_index].rowconfigure(0, weight=1)
+			[self.simple_data_frames[content_selection_state_index].columnconfigure(n, weight=1) for n in range(self.track_size)]
+			self.simple_data_frames[content_selection_state_index].grid(row=0, column=0, sticky=tk.NW+tk.NE+tk.SW+tk.SE+tk.W+tk.E+tk.N+tk.S)
 			
-			self.simple_values_boxes[content_selection_state] = tk.Listbox(self.content_frames[content_selection_state])
-			self.simple_values_boxes[content_selection_state].grid(row=0, column=1, sticky=tk.NW+tk.NE+tk.SW+tk.SE+tk.W+tk.E+tk.N+tk.S)
-			[self.simple_values_boxes[content_selection_state].insert(0, v) for v in data_values.keys()]
-			self.simple_values_boxes[content_selection_state].config(width=0) # Reseting the ListBox width is important to fit the size of each value string.
+			self.simple_values_boxes[content_selection_state_index] = tk.Listbox(self.content_frames[content_selection_state_index])
+			self.simple_values_boxes[content_selection_state_index].grid(row=0, column=1, sticky=tk.NW+tk.NE+tk.SW+tk.SE+tk.W+tk.E+tk.N+tk.S)
+			[self.simple_values_boxes[content_selection_state_index].insert(0, v) for v in data_values.keys()]
+			self.simple_values_boxes[content_selection_state_index].config(width=0) # Reseting the ListBox width is important to fit the size of each value string.
 			
 			# Defaulting the selection to the first index of the ListBox.
 			# If there's no explicit default value, it defaults to the last value inserted,
 			# with no visual representation, which is misleading.
-			self.simple_values_boxes[content_selection_state].select_set(0)
-			self.simple_values_boxes[content_selection_state].activate(0)
+			self.simple_values_boxes[content_selection_state_index].select_set(0)
+			self.simple_values_boxes[content_selection_state_index].activate(0)
 
-			self.simple_data_buttons[content_selection_state] = []
-			if not self.file[self.content_names_in_file[content_selection_state]]:
+			self.simple_data_buttons[content_selection_state_index] = []
+			if not self.file[self.content_names_in_file[content_selection_state_index]]:
 				for c in range(self.track_size):
 					row = []
 					row_data = []
 					for r in range(self.track_size):
 						button = tk.Button(
-							self.simple_data_frames[content_selection_state], 
+							self.simple_data_frames[content_selection_state_index], 
 							text=default_data_value
 						)
 						button.grid(row=r, column=c, sticky=tk.NW+tk.NE+tk.SW+tk.SE+tk.W+tk.E+tk.N+tk.S)
 						row.append(button)
 						row_data.append(default_data_value)
-					self.simple_data_buttons[content_selection_state].append(row)
-					self.file[self.content_names_in_file[content_selection_state]].append(row_data) 
+					self.simple_data_buttons[content_selection_state_index].append(row)
+					self.file[self.content_names_in_file[content_selection_state_index]].append(row_data) 
 			else:
 				for c in range(self.track_size):
 					row = []
 					for r in range(self.track_size):
 						button = tk.Button(
-							self.simple_data_frames[content_selection_state], 
-							text=self.file[self.content_names_in_file[content_selection_state]][c][r]
+							self.simple_data_frames[content_selection_state_index], 
+							text=self.file[self.content_names_in_file[content_selection_state_index]][c][r]
 						)
 						button.grid(row=r, column=c, sticky=tk.NW+tk.NE+tk.SW+tk.SE+tk.W+tk.E+tk.N+tk.S)
 						row.append(button)
-					self.simple_data_buttons[content_selection_state].append(row)
+					self.simple_data_buttons[content_selection_state_index].append(row)
 			def save_alteration_within_the_matrix(b, r, c):
-				self.file[self.content_names_in_file[content_selection_state]][r][c] = b["text"]
+				self.file[self.content_names_in_file[content_selection_state_index]][r][c] = b["text"]
 			for c in range(self.track_size):
 				row = []
 				for r in range(self.track_size):
-					b = self.simple_data_buttons[content_selection_state][r][c]
+					b = self.simple_data_buttons[content_selection_state_index][r][c]
+					# Simulating multiline statements inside a lambda using a list.
+					# I chose this solution in order to handle lambda scoping rules (Hence the default arguments).
+					# When a button is clicked within the matrix, not only its text must be updated according to the selected value,
+					# but the according matrix within the file must be updated so that it can be eventually saved.
 					b.config(command=lambda b=b, r=r, c=c: [
 						b.config(	
-							text=data_values[self.simple_values_boxes[content_selection_state].get(tk.ACTIVE)]
+							text=data_values[self.simple_values_boxes[content_selection_state_index].get(tk.ACTIVE)]
 						),
 						save_alteration_within_the_matrix(b, r, c)
 					])
 		else:
-			self.content_selection_states[content_selection_state] = False
-			self.content_frames[content_selection_state].grid_remove()
-			self.editor_buttons[content_selection_state].config(relief="raised")
+			self.content_selection_states[content_selection_state_index] = False
+			self.content_frames[content_selection_state_index].grid_remove()
+			self.editor_buttons[content_selection_state_index].config(relief="raised")
+
+	def compose_complex_data_editor(self, content_selection_state_index, data_values, default_data_value=1):
+		if not self.content_selection_states[content_selection_state_index]:
+			self.deselect_irrelevant_editors(content_selection_state_index)
+			self.content_selection_states[content_selection_state_index] = True
+			self.content_frames[content_selection_state_index].grid(row=1, column=0, sticky=tk.W+tk.N+tk.S+tk.NW+tk.SW)
+			self.editor_buttons[content_selection_state_index].config(relief="sunken")
+			self.complex_data_selector_buttons[content_selection_state_index] = [
+				tk.Button(self.content_frames[content_selection_state_index], text="1", 
+					command=None
+				)
+			]
+			self.complex_data_selector_states[content_selection_state_index] = [False]
+			# Have to continue tweaking and implementing the selector buttons.
+			def control(action=0): # 0 = ADD, 1 == REMOVE
+				if not action:
+					# Gets the text of the previous selector button, converts to an int and add 1 to it,
+					# thus defining the text name for the next button to be added.
+					b_text_n = int(self.complex_data_selector_buttons[content_selection_state_index][-1]["text"])
+					next_number = b_text_n+1
+					self.complex_data_selector_buttons[content_selection_state_index].append(
+						tk.Button(self.content_frames[content_selection_state_index], text=next_number, 
+							command=None
+						)
+					)
+					self.complex_data_selector_states[content_selection_state_index].append(False)
+					self.complex_data_selector_buttons[content_selection_state_index][-1].grid(row=0, column=next_number+1, sticky=tk.W)
+				else:
+					if len(self.complex_data_selector_buttons[content_selection_state_index]) > 1:
+						self.complex_data_selector_buttons[content_selection_state_index][-1].grid_remove()
+						self.complex_data_selector_buttons[content_selection_state_index].pop()
+						self.complex_data_selector_states[content_selection_state_index].pop()
+				print(self.complex_data_selector_states[content_selection_state_index])
+			self.complex_data_selector_controller_buttons[content_selection_state_index] = [
+				tk.Button(self.content_frames[content_selection_state_index], text="+", 
+					command=lambda: control(0)
+				),
+				tk.Button(self.content_frames[content_selection_state_index], text="-", 
+					command=lambda: control(1)
+				)
+			]
+			self.complex_data_selector_controller_buttons[content_selection_state_index][0].grid(row=0, column=0, sticky=tk.W)
+			self.complex_data_selector_controller_buttons[content_selection_state_index][1].grid(row=0, column=1, sticky=tk.W)
+			self.complex_data_selector_buttons[content_selection_state_index][0].grid(row=0, column=2, sticky=tk.W)
+			
+		else:
+			self.content_selection_states[content_selection_state_index] = False
+			self.content_frames[content_selection_state_index].grid_remove()
+			self.editor_buttons[content_selection_state_index].config(relief="raised")
 
 	def compose_ground_data_editor(self):
 		self.ground_data_values = {
@@ -183,6 +247,13 @@ class App(tk.Tk):
 		self.compose_simple_data_editor(0, # 0, which stands for Ground Data within the selection states.
 			self.ground_data_values, 
 			self.ground_data_values["Nebulosa"]
+		)
+
+	def compose_waypoint_data_editor(self):
+		self.waypoint_data_values = [n for n in range(100)]
+		self.compose_complex_data_editor(1, # 0, which stands for Ground Data within the selection states.
+			self.waypoint_data_values, 
+			0
 		)
 
 	def compose_spawn_data_editor(self):

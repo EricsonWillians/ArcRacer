@@ -64,10 +64,10 @@ class Player:
 		self.checkpoints_cleared_in_current_lap = {}
 		for a in track.actor_positions.keys():
 			if track.actor_positions[a] in [
-				self.track.ARCCHECKPOINT0,
-				self.track.ARCCHECKPOINT1,
-				self.track.ARCCHECKPOINT2,
-				self.track.ARCCHECKPOINT3
+				self.track.ARCCHECKPOINT_UP,
+				self.track.ARCCHECKPOINT_DOWN,
+				self.track.ARCCHECKPOINT_LEFT,
+				self.track.ARCCHECKPOINT_RIGHT
 			]:
 				self.checkpoints_cleared_in_current_lap[a] = False
 
