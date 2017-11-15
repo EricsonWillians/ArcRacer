@@ -17,7 +17,7 @@ class App(tk.Tk):
 		self.track_size = 16
 		self.file = {
 			"GROUND_DATA": [],
-			"WAYPOINTS": [],
+			"WAYPOINTS": {},
 			"SPAWNPOINTS": [],
 			"ACTORPOINTS": []
 		}
@@ -191,14 +191,41 @@ class App(tk.Tk):
 			self.editor_buttons[content_selection_state_index].config(relief="raised")
 
 	def compose_complex_data_editor(self, content_selection_state_index, data_values, default_data_value=1):
+		self.complex_data_frames[content_selection_state_index] = {}
+		self.complex_data_buttons[content_selection_state_index] = {}
+		self.complex_values_boxes[content_selection_state_index] = {}
 		if not self.content_selection_states[content_selection_state_index]:
 			self.deselect_irrelevant_editors(content_selection_state_index)
 			self.content_selection_states[content_selection_state_index] = True
-			self.content_frames[content_selection_state_index].grid(row=1, column=0, sticky=tk.W+tk.N+tk.S+tk.NW+tk.SW)
+			self.content_frames[content_selection_state_index].grid(row=1, column=0, sticky=tk.NW+tk.NE+tk.SW+tk.SE+tk.W+tk.E+tk.N+tk.S)
 			self.editor_buttons[content_selection_state_index].config(relief="sunken")
+			self.file[self.content_names_in_file[content_selection_state_index]]["1"] = []
+			self.complex_data_frames[content_selection_state_index]["1"] = tk.Frame(self.content_frames[content_selection_state_index])
+			self.complex_data_frames[content_selection_state_index]["1"].rowconfigure(0, weight=1)
+			[self.complex_data_frames[content_selection_state_index]["1"].columnconfigure(n, weight=1) for n in range(self.track_size)]
+			self.complex_data_frames[content_selection_state_index]["1"].grid(row=1, column=0, sticky=tk.NW+tk.NE+tk.SW+tk.SE+tk.W+tk.E+tk.N+tk.S)
+			self.complex_data_buttons[content_selection_state_index]["1"] = []
+			self.complex_values_boxes[content_selection_state_index]["1"] = tk.Listbox(self.content_frames[content_selection_state_index])
+			self.complex_values_boxes[content_selection_state_index]["1"].grid(row=1, column=1, sticky=tk.NW+tk.NE+tk.SW+tk.SE+tk.W+tk.E+tk.N+tk.S)
+			[self.complex_values_boxes[content_selection_state_index]["1"].insert(0, v) for v in data_values]
+			self.complex_values_boxes[content_selection_state_index]["1"].config(width=0) # Reseting the ListBox width is important to fit the size of each value string.
+			def generate_data_button_matrix(selector_id):
+				for c in range(self.track_size):
+					row = []
+					row_data = []
+					for r in range(self.track_size):
+						button = tk.Button(
+							self.complex_data_frames[content_selection_state_index][selector_id], 
+							text=selector_id
+						)
+						button.grid(row=r, column=c, sticky=tk.NW+tk.NE+tk.SW+tk.SE+tk.W+tk.E+tk.N+tk.S)
+						row.append(button)
+						row_data.append(default_data_value)
+					self.complex_data_buttons[content_selection_state_index][selector_id].append(row)
+					self.file[self.content_names_in_file[content_selection_state_index]][selector_id].append(row) 
 			self.complex_data_selector_buttons[content_selection_state_index] = [
 				tk.Button(self.content_frames[content_selection_state_index], text="1", 
-					command=None
+					command=lambda: generate_data_button_matrix("1") 
 				)
 			]
 			self.complex_data_selector_states[content_selection_state_index] = [False]
@@ -210,7 +237,7 @@ class App(tk.Tk):
 					next_number = b_text_n+1
 					self.complex_data_selector_buttons[content_selection_state_index].append(
 						tk.Button(self.content_frames[content_selection_state_index], text=next_number, 
-							command=None
+							command=generate_data_button_matrix(str(b_text_n))
 						)
 					)
 					self.complex_data_selector_states[content_selection_state_index].append(False)
