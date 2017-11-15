@@ -199,17 +199,17 @@ class App(tk.Tk):
 			self.content_selection_states[content_selection_state_index] = True
 			self.content_frames[content_selection_state_index].grid(row=1, column=0, sticky=tk.NW+tk.NE+tk.SW+tk.SE+tk.W+tk.E+tk.N+tk.S)
 			self.editor_buttons[content_selection_state_index].config(relief="sunken")
-			self.file[self.content_names_in_file[content_selection_state_index]]["1"] = []
-			self.complex_data_frames[content_selection_state_index]["1"] = tk.Frame(self.content_frames[content_selection_state_index])
-			self.complex_data_frames[content_selection_state_index]["1"].rowconfigure(0, weight=1)
-			[self.complex_data_frames[content_selection_state_index]["1"].columnconfigure(n, weight=1) for n in range(self.track_size)]
-			self.complex_data_frames[content_selection_state_index]["1"].grid(row=1, column=0, sticky=tk.NW+tk.NE+tk.SW+tk.SE+tk.W+tk.E+tk.N+tk.S)
-			self.complex_data_buttons[content_selection_state_index]["1"] = []
-			self.complex_values_boxes[content_selection_state_index]["1"] = tk.Listbox(self.content_frames[content_selection_state_index])
-			self.complex_values_boxes[content_selection_state_index]["1"].grid(row=1, column=1, sticky=tk.NW+tk.NE+tk.SW+tk.SE+tk.W+tk.E+tk.N+tk.S)
-			[self.complex_values_boxes[content_selection_state_index]["1"].insert(0, v) for v in data_values]
-			self.complex_values_boxes[content_selection_state_index]["1"].config(width=0) # Reseting the ListBox width is important to fit the size of each value string.
 			def generate_data_button_matrix(selector_id):
+				self.file[self.content_names_in_file[content_selection_state_index]][selector_id] = []
+				self.complex_data_frames[content_selection_state_index][selector_id] = tk.Frame(self.content_frames[content_selection_state_index])
+				self.complex_data_frames[content_selection_state_index][selector_id].rowconfigure(0, weight=1)
+				[self.complex_data_frames[content_selection_state_index][selector_id].columnconfigure(n, weight=1) for n in range(self.track_size)]
+				self.complex_data_frames[content_selection_state_index][selector_id].grid(row=1, column=0, sticky=tk.NW+tk.NE+tk.SW+tk.SE+tk.W+tk.E+tk.N+tk.S)
+				self.complex_data_buttons[content_selection_state_index][selector_id] = []
+				self.complex_values_boxes[content_selection_state_index][selector_id] = tk.Listbox(self.content_frames[content_selection_state_index])
+				self.complex_values_boxes[content_selection_state_index][selector_id].grid(row=1, column=1, sticky=tk.NW+tk.NE+tk.SW+tk.SE+tk.W+tk.E+tk.N+tk.S)
+				[self.complex_values_boxes[content_selection_state_index][selector_id].insert(0, v) for v in data_values]
+				self.complex_values_boxes[content_selection_state_index][selector_id].config(width=0) # Reseting the ListBox width is important to fit the size of each value string.
 				for c in range(self.track_size):
 					row = []
 					row_data = []
@@ -237,7 +237,7 @@ class App(tk.Tk):
 					next_number = b_text_n+1
 					self.complex_data_selector_buttons[content_selection_state_index].append(
 						tk.Button(self.content_frames[content_selection_state_index], text=next_number, 
-							command=generate_data_button_matrix(str(b_text_n))
+							command=lambda: generate_data_button_matrix(str(next_number))
 						)
 					)
 					self.complex_data_selector_states[content_selection_state_index].append(False)
