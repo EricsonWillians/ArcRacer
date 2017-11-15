@@ -4,7 +4,7 @@ import tkinter.filedialog as fd
 import sys
 import os
 import pickle
-from collections import OrderedDict
+from collections import OrderedDict, namedtuple
 
 class App(tk.Tk):
 
@@ -202,11 +202,10 @@ class App(tk.Tk):
 				)
 			]
 			self.complex_data_selector_states[content_selection_state_index] = [False]
-			# Have to continue tweaking and implementing the selector buttons.
+			# DataSelector = namedtuple("DataSelector", "button")
+			# Have to define a DataSelector.
 			def control(action=0): # 0 = ADD, 1 == REMOVE
 				if not action:
-					# Gets the text of the previous selector button, converts to an int and add 1 to it,
-					# thus defining the text name for the next button to be added.
 					b_text_n = int(self.complex_data_selector_buttons[content_selection_state_index][-1]["text"])
 					next_number = b_text_n+1
 					self.complex_data_selector_buttons[content_selection_state_index].append(
@@ -221,17 +220,21 @@ class App(tk.Tk):
 						self.complex_data_selector_buttons[content_selection_state_index][-1].grid_remove()
 						self.complex_data_selector_buttons[content_selection_state_index].pop()
 						self.complex_data_selector_states[content_selection_state_index].pop()
-				print(self.complex_data_selector_states[content_selection_state_index])
-			self.complex_data_selector_controller_buttons[content_selection_state_index] = [
-				tk.Button(self.content_frames[content_selection_state_index], text="+", 
-					command=lambda: control(0)
+			SelectorController = namedtuple("SelectorController", "button")
+			self.complex_data_selector_controller_buttons[content_selection_state_index] = (
+				SelectorController(
+					tk.Button(self.content_frames[content_selection_state_index], text="+", 
+						command=lambda: control(0)
+					)
 				),
-				tk.Button(self.content_frames[content_selection_state_index], text="-", 
-					command=lambda: control(1)
+				SelectorController(
+					tk.Button(self.content_frames[content_selection_state_index], text="-", 
+						command=lambda: control(1)
+					)
 				)
-			]
-			self.complex_data_selector_controller_buttons[content_selection_state_index][0].grid(row=0, column=0, sticky=tk.W)
-			self.complex_data_selector_controller_buttons[content_selection_state_index][1].grid(row=0, column=1, sticky=tk.W)
+			)
+			self.complex_data_selector_controller_buttons[content_selection_state_index][0].button.grid(row=0, column=0, sticky=tk.W)
+			self.complex_data_selector_controller_buttons[content_selection_state_index][1].button.grid(row=0, column=1, sticky=tk.W)
 			self.complex_data_selector_buttons[content_selection_state_index][0].grid(row=0, column=2, sticky=tk.W)
 			
 		else:
