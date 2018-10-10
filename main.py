@@ -17,9 +17,6 @@ from tracks import tracks
 with open("cfg.json") as f:
 	options = json.load(f)
 
-print(options)
-
-
 class SceneManager:
 
 	MAIN_MENU = 0
@@ -121,6 +118,7 @@ if __name__ == "__main__":
 
 	# Pygame
 
+	os.environ["SDL_VIDEO_CENTERED"] = '1'
 	WINDOW_WIDTH = options["RESOLUTION"][0]
 	WINDOW_HEIGHT = options["RESOLUTION"][1]
 	pygame.init()

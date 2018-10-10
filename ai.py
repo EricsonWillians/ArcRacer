@@ -1,6 +1,8 @@
 import math
 import pygame
-from cfg import options
+import json
+with open("cfg.json") as f:
+	options = json.load(f)
 
 class Bot:
 

@@ -1,6 +1,8 @@
 import pygame
 from actor import Actor, Car
-from cfg import options
+import json
+with open("cfg.json") as f:
+	options = json.load(f)
 from random import randint
 
 class Track:

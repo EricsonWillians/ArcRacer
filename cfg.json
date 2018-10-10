@@ -1,5 +1,5 @@
 {
-    "RESOLUTION": [1280, 800],
+    "RESOLUTION": [800, 600],
     "FULLSCREEN": "False",
     "PLAYER1_ACCELERATE": "pygame.K_UP",
     "PLAYER1_REVERSE": "pygame.K_DOWN",

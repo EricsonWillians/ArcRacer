@@ -1,6 +1,9 @@
 from PyGameWidgets import core
 from PyGameWidgets import widgets
-from cfg import options
+import json
+
+with open("cfg.json") as f:
+	options = json.load(f)
 
 TITLE_SIZE = 64
 MENU_SIZE = 32
