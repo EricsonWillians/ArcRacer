@@ -1,7 +1,7 @@
 import sys
 import pygame
 from PyGameWidgets import core, widgets
-from cfg import options
+import json
 import actor
 import ui
 import hud
@@ -14,7 +14,11 @@ sys.path.append(dir)
 
 from tracks import tracks
 
-print("Initializing game with the following options: \n{opt}".format(opt=options))
+with open("cfg.json") as f:
+	options = json.load(f)
+
+print(options)
+
 
 class SceneManager:
 
@@ -121,7 +125,7 @@ if __name__ == "__main__":
 	WINDOW_HEIGHT = options["RESOLUTION"][1]
 	pygame.init()
 	pygame.font.init
-	if options["FULLSCREEN"]:
+	if eval(options["FULLSCREEN"]):
 		screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT), pygame.FULLSCREEN)
 	else:
 		screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
@@ -158,28 +162,28 @@ if __name__ == "__main__":
 		for n in range(gm.number_of_humans):
 			if e.type == pygame.KEYDOWN:
 				# Movement-related
-				if e.key == options["PLAYER{_n}_ACCELERATE".format(_n=n+1)]:
+				if e.key == eval(options["PLAYER{_n}_ACCELERATE".format(_n=n+1)]):
 					gm.players[n].states[0] = True
-				elif e.key == options["PLAYER{_n}_REVERSE".format(_n=n+1)]:
+				elif e.key == eval(options["PLAYER{_n}_REVERSE".format(_n=n+1)]):
 					gm.players[n].states[1] = True
-				elif e.key == options["PLAYER{_n}_STEER_LEFT".format(_n=n+1)]:
+				elif e.key == eval(options["PLAYER{_n}_STEER_LEFT".format(_n=n+1)]):
 					gm.players[n].states[2] = True	
-				elif e.key == options["PLAYER{_n}_STEER_RIGHT".format(_n=n+1)]:
+				elif e.key == eval(options["PLAYER{_n}_STEER_RIGHT".format(_n=n+1)]):
 					gm.players[n].states[3] = True
 				# Other
-				elif e.key == options["PAUSE"]:
+				elif e.key == eval(options["PAUSE"]):
 					sm.change_scene(SceneManager.PAUSE)
 				elif e.key == pygame.K_ESCAPE:
 					gm.default()
 					sm.change_scene(SceneManager.MAIN_MENU)
 			elif e.type == pygame.KEYUP:	
-				if e.key == options["PLAYER{_n}_ACCELERATE".format(_n=n+1)]:
+				if e.key == eval(options["PLAYER{_n}_ACCELERATE".format(_n=n+1)]):
 					gm.players[n].states[0] = False
-				elif e.key == options["PLAYER{_n}_REVERSE".format(_n=n+1)]:
+				elif e.key == eval(options["PLAYER{_n}_REVERSE".format(_n=n+1)]):
 					gm.players[n].states[1] = False
-				elif e.key == options["PLAYER{_n}_STEER_LEFT".format(_n=n+1)]:
+				elif e.key == eval(options["PLAYER{_n}_STEER_LEFT".format(_n=n+1)]):
 					gm.players[n].states[2] = False
-				elif e.key == options["PLAYER{_n}_STEER_RIGHT".format(_n=n+1)]:
+				elif e.key == eval(options["PLAYER{_n}_STEER_RIGHT".format(_n=n+1)]):
 					gm.players[n].states[3] = False
 		for n in range(gm.number_of_humans, gm.max_player_slot):
 			pass
