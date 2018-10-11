@@ -61,18 +61,6 @@ class Player:
 		self.position = 1
 		self.current_lap = 1
 		self.clock = 0
-		self.checkpoints_cleared = 0
-		self.has_updated_cleared_checkpoint_count_this_lap = False
-		self.checkpoint_logic = False
-		self.checkpoints_cleared_in_current_lap = {}
-		for a in track.actor_positions.keys():
-			if track.actor_positions[a] in [
-				self.track.ARCCHECKPOINT_UP,
-				self.track.ARCCHECKPOINT_DOWN,
-				self.track.ARCCHECKPOINT_LEFT,
-				self.track.ARCCHECKPOINT_RIGHT
-			]:
-				self.checkpoints_cleared_in_current_lap[a] = False
 
 	def set_car(self, car):
 		self.car = car
@@ -140,35 +128,23 @@ class Player:
 		if self.states[3]:
 			self.car.angle -= self.car.steering_speed
 			self.car.rotate()
+
+		# Handling off-screen presence
 		if (self.car.pos[0] - self.car.dimensions[0]) > options["RESOLUTION"][0] or (self.car.pos[1] - self.car.dimensions[1]) > options["RESOLUTION"][1] or self.car.pos[0] < 0 or self.car.pos[1] < 0:
 			self.car.speed -= (self.car.acceleration_rate + handicap) * Car.OFF_SCREEN_BOUNCING_ACCELERATION
+
 		# Track-related movement interference
 		# Here comes anything from the track that affects the movement, 
 		# like different types of ground and obstacles.
-		for p in self.track.ground_positions.keys():
-			if pygame.Rect(p, (self.track.ground_tile_dimensions[0], self.track.ground_tile_dimensions[1])).colliderect(pygame.Rect(self.car.pos, self.car.dimensions)):
-				if self.track.ground_positions[p] == self.track.NEBULOSA:
+		for pos in self.track.ground_positions.keys():
+			if pygame.Rect(pos, (self.track.ground_tile_dimensions[0], self.track.ground_tile_dimensions[1])).colliderect(pygame.Rect(self.car.pos, self.car.dimensions)):
+				if self.track.ground_positions[pos] == self.track.NEBULOSA:
 					if self.states[0]:
 						deaccelerate(1, Car.NEBULOSA_MININUM_SPEED, Car.NEBULOSA_DEACCELERATION_RATE)
 					if self.states[1]:
 						deaccelerate(0, -Car.NEBULOSA_MININUM_SPEED, Car.NEBULOSA_DEACCELERATION_RATE)
-		# Non-movement-related track matters that also require collision detection.
-		# Each time the player's car collides with a checkpoint,
-		# it marks that checkpoint as cleared. When the player finally comes to the finnish line,
-		# all checkpoints are set to False and the lap counter is increased.
-		for p in self.checkpoints_cleared_in_current_lap.keys():
-			if pygame.Rect(p, (self.track.actor_dimensions[0], self.track.actor_dimensions[1])).colliderect(pygame.Rect(self.car.pos, self.car.dimensions)):
-				if not self.checkpoints_cleared_in_current_lap[p]:
-					self.checkpoints_cleared += 1
-				self.checkpoints_cleared_in_current_lap[p] = True					
-		for p in self.track.actor_positions.keys():
-			if pygame.Rect(p, (self.track.actor_dimensions[0], self.track.actor_dimensions[1])).colliderect(pygame.Rect(self.car.pos, self.car.dimensions)):
-				if self.track.actor_positions[p] == self.track.ARCFINISH:
-					if all(x for x in self.checkpoints_cleared_in_current_lap.values()):
-						self.current_lap += 1
-						self.checkpoints_cleared_in_current_lap = dict.fromkeys(self.checkpoints_cleared_in_current_lap, False)
-						self.has_updated_cleared_checkpoint_count_this_lap = False
-		
 
+		# No checkpoints anymore...
+		# I'll deal with the lap system without them.
 
 						

@@ -20,14 +20,6 @@ class Track:
 
 	ARCFINISH = 1
 	ARCFINISH_IMAGE = "gfx/arcfinish.png"
-	ARCCHECKPOINT_UP = 2
-	ARCCHECKPOINT_UP_IMAGE = "gfx/arccheckpoint0.png"
-	ARCCHECKPOINT_DOWN = 3
-	ARCCHECKPOINT_DOWN_IMAGE = "gfx/arccheckpoint1.png"
-	ARCCHECKPOINT_LEFT = 4
-	ARCCHECKPOINT_LEFT_IMAGE = "gfx/arccheckpoint2.png"
-	ARCCHECKPOINT_RIGHT = 5
-	ARCCHECKPOINT_RIGHT_IMAGE = "gfx/arccheckpoint3.png"
 
 	def __init__(self, loaded_track):
 		self.track = loaded_track
@@ -74,30 +66,6 @@ class Track:
 				if column == Track.ARCFINISH:
 					img = pygame.transform.scale(
 						pygame.image.load(Track.ARCFINISH_IMAGE), 
-						self.actor_dimensions
-					)
-					actor_row.append(img)
-				elif column == Track.ARCCHECKPOINT_UP:
-					img = pygame.transform.scale(
-						pygame.image.load(Track.ARCCHECKPOINT_UP_IMAGE), 
-						self.actor_dimensions
-					)
-					actor_row.append(img)
-				elif column == Track.ARCCHECKPOINT_DOWN:
-					img = pygame.transform.scale(
-						pygame.image.load(Track.ARCCHECKPOINT_DOWN_IMAGE), 
-						self.actor_dimensions
-					)
-					actor_row.append(img)
-				elif column == Track.ARCCHECKPOINT_LEFT:
-					img = pygame.transform.scale(
-						pygame.image.load(Track.ARCCHECKPOINT_LEFT_IMAGE), 
-						self.actor_dimensions
-					)
-					actor_row.append(img)
-				elif column == Track.ARCCHECKPOINT_RIGHT:
-					img = pygame.transform.scale(
-						pygame.image.load(Track.ARCCHECKPOINT_RIGHT_IMAGE), 
 						self.actor_dimensions
 					)
 					actor_row.append(img)

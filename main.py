@@ -38,18 +38,11 @@ class GameManager:
 		return [track.name for track in self.loaded_tracks]
 
 	def update_racing_positions(self):
-		for p in self.players:
-			self.checkpoints_cleared_of_all_players[p.name] = p.checkpoints_cleared
-		self.racing_positions = sorted(
-			self.checkpoints_cleared_of_all_players.keys(), 
-			key=lambda k: self.checkpoints_cleared_of_all_players[k], 
-			reverse=True
-		)
+		# I'll find a way to deal with this.	
+		pass
 
 	def get_player_racing_position_by_name(self, name):
-		for p in self.players:
-			if p.name == name:
-				return self.racing_positions.index(name)+1 # We can't have a 0 racing position.
+		pass
 
 	def set_number_of_players(self, n):
 		self.number_of_players = n
@@ -253,7 +246,7 @@ if __name__ == "__main__":
 				core.Text(str(gm.players[0].car.gear), game_hud.FONT_SIZE, game_hud.COLOR, game_hud.FONT, game_hud.BOLD, game_hud.ITALIC)
 			)
 			game_hud.player1_info_panel_labels[6].set_text(
-				core.Text(str(gm.get_player_racing_position_by_name("P1")), game_hud.FONT_SIZE, game_hud.COLOR, game_hud.FONT, game_hud.BOLD, game_hud.ITALIC)
+				core.Text("VOID", game_hud.FONT_SIZE, game_hud.COLOR, game_hud.FONT, game_hud.BOLD, game_hud.ITALIC)
 			)
 			game_hud.player1_info_panel_labels[8].set_text(
 				core.Text(str(gm.players[0].current_lap), game_hud.FONT_SIZE, game_hud.COLOR, game_hud.FONT, game_hud.BOLD, game_hud.ITALIC)
@@ -266,7 +259,7 @@ if __name__ == "__main__":
 					core.Text(str(gm.players[1].car.gear), game_hud.FONT_SIZE, game_hud.COLOR, game_hud.FONT, game_hud.BOLD, game_hud.ITALIC)
 				)
 				game_hud.player2_info_panel_labels[6].set_text(
-					core.Text(str(gm.get_player_racing_position_by_name("P2")), game_hud.FONT_SIZE, game_hud.COLOR, game_hud.FONT, game_hud.BOLD, game_hud.ITALIC)
+					core.Text("VOID", game_hud.FONT_SIZE, game_hud.COLOR, game_hud.FONT, game_hud.BOLD, game_hud.ITALIC)
 				)
 				game_hud.player2_info_panel_labels[8].set_text(
 					core.Text(str(gm.players[1].current_lap), game_hud.FONT_SIZE, game_hud.COLOR, game_hud.FONT, game_hud.BOLD, game_hud.ITALIC)
