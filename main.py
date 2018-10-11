@@ -14,8 +14,6 @@ import os
 dir = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(dir)
 
-from tracks import tracks
-
 class SceneManager:
 
 	MAIN_MENU = 0
@@ -37,10 +35,7 @@ class GameManager:
 		self.default()
 
 	def get_track_list(self):
-		path = "tracks"
-		tracks = [f[:-3] for f in os.listdir(path) if os.path.isfile(os.path.join(path, f))]
-		tracks.remove("__init__")
-		return tracks
+		return [track.name for track in self.loaded_tracks]
 
 	def update_racing_positions(self):
 		for p in self.players:
@@ -136,7 +131,8 @@ if __name__ == "__main__":
 	loaded_tracks = []	
 	for track_name in track_names:
 		with open(f"tracks/{track_name}") as t:	
-			loaded_tracks.append(track.Track(json.load(t)))	
+			loaded_tracks.append(track.Track(json.load(t)))
+		print(f"Loading track: {track_name}")
 
 	sm = SceneManager()
 	gm = GameManager(loaded_tracks)

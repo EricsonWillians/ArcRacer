@@ -1,3 +1,5 @@
+# Unfinished work kept for historical reasons.
+
 import traceback
 import tkinter as tk
 import tkinter.filedialog as fd
