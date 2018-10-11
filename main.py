@@ -2,6 +2,8 @@ import sys
 import pygame
 from PyGameWidgets import core, widgets
 import json
+with open("cfg.json") as f:
+	options = json.load(f)
 import actor
 import ui
 import hud
@@ -13,9 +15,6 @@ dir = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(dir)
 
 from tracks import tracks
-
-with open("cfg.json") as f:
-	options = json.load(f)
 
 class SceneManager:
 
@@ -132,9 +131,13 @@ if __name__ == "__main__":
 	running = True
 
 	# Game-specific
-
-	loaded_tracks = [track.Track(t) for t in tracks]
 	
+	track_names = [t for t in os.listdir("tracks") if os.path.isfile(os.path.join("tracks", t)) and t.endswith(".json")]
+	loaded_tracks = []	
+	for track_name in track_names:
+		with open(f"tracks/{track_name}") as t:	
+			loaded_tracks.append(track.Track(json.load(t)))	
+
 	sm = SceneManager()
 	gm = GameManager(loaded_tracks)
 	main_menu = ui.MainMenu()

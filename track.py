@@ -29,13 +29,13 @@ class Track:
 	ARCCHECKPOINT_RIGHT = 5
 	ARCCHECKPOINT_RIGHT_IMAGE = "gfx/arccheckpoint3.png"
 
-	def __init__(self, track):
-		self.track = track
-		self.name = self.track.name
-		self.ground_data = self.track.ground_data	
-		self.waypoints = self.track.waypoints
-		self.spawnpoints = self.track.spawnpoints	
-		self.actorpoints = self.track.actorpoints
+	def __init__(self, loaded_track):
+		self.track = loaded_track
+		self.name = self.track["name"]
+		self.ground_data = self.track["ground_data"]	
+		self.waypoints = self.track["waypoints"]
+		self.spawnpoints = self.track["spawnpoints"]	
+		self.actorpoints = self.track["actorpoints"]
 		self.ground_positions = {}
 		self.waypoint_positions = {}
 		self.spawn_positions = {}
