@@ -59,6 +59,8 @@ class Player:
 		self.track = track
 		self.name = name
 		self.position = 1
+		self.reached_lap = False
+		self.crossed_lap = False
 		self.current_lap = 1
 		self.clock = 0
 
@@ -133,18 +135,28 @@ class Player:
 		if (self.car.pos[0] - self.car.dimensions[0]) > options["RESOLUTION"][0] or (self.car.pos[1] - self.car.dimensions[1]) > options["RESOLUTION"][1] or self.car.pos[0] < 0 or self.car.pos[1] < 0:
 			self.car.speed -= (self.car.acceleration_rate + handicap) * Car.OFF_SCREEN_BOUNCING_ACCELERATION
 
-		# Track-related movement interference
-		# Here comes anything from the track that affects the movement, 
-		# like different types of ground and obstacles.
+		# Handling ground collision
 		for pos in self.track.ground_positions.keys():
 			if pygame.Rect(pos, (self.track.ground_tile_dimensions[0], self.track.ground_tile_dimensions[1])).colliderect(pygame.Rect(self.car.pos, self.car.dimensions)):
+				# Movement interference
 				if self.track.ground_positions[pos] == self.track.NEBULOSA:
 					if self.states[0]:
 						deaccelerate(1, Car.NEBULOSA_MININUM_SPEED, Car.NEBULOSA_DEACCELERATION_RATE)
 					if self.states[1]:
 						deaccelerate(0, -Car.NEBULOSA_MININUM_SPEED, Car.NEBULOSA_DEACCELERATION_RATE)
 
-		# No checkpoints anymore...
-		# I'll deal with the lap system without them.
-
+		# Handling actor collision
+		for pos in self.track.actor_positions.keys():
+			if pygame.Rect(pos, (self.track.actor_dimensions[0], self.track.actor_dimensions[1])).colliderect(pygame.Rect(self.car.pos, self.car.dimensions)):
+				# Handling lap logic
+				if self.track.actor_positions[pos] == self.track.ARCFINISH_BACK:
+					if self.crossed_lap:
+						self.reached_lap = True
+						self.crossed_lap = False
+				elif self.track.actor_positions[pos] == self.track.ARCFINISH:
+					if self.reached_lap:
+						self.current_lap += 1
+						self.reached_lap = False
+				elif self.track.actor_positions[pos] == self.track.ARCFINISH_FRONT:
+					self.crossed_lap = True
 						

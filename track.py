@@ -18,8 +18,12 @@ class Track:
 
 	# Actors
 
-	ARCFINISH = 1
+	ARCFINISH_BACK = 1	
+	ARCFINISH = 2	
+	ARCFINISH_FRONT = 3
 	ARCFINISH_IMAGE = "gfx/arcfinish.png"
+	ARCFINISH_BACK_IMAGE = "gfx/arcfinish_back.png"
+	ARCFINISH_FRONT_IMAGE = "gfx/arcfinish_front.png"
 
 	def __init__(self, loaded_track):
 		self.track = loaded_track
@@ -44,6 +48,9 @@ class Track:
 			int(options["RESOLUTION"][1] / 16)
 		]
 		self.surface = pygame.Surface((options["RESOLUTION"][0], options["RESOLUTION"][1]), pygame.SRCALPHA, 32)
+		
+		# Iterating over the track's ground data		
+		
 		for row in self.ground_data:
 			ground_tile_row = []
 			for column in row:
@@ -60,6 +67,9 @@ class Track:
 					)
 					ground_tile_row.append(img)
 			self.ground_tiles.append(ground_tile_row)
+		
+		# Iterating over the track's actor data		
+
 		for row in self.actorpoints:
 			actor_row = []
 			for column in row:
@@ -69,9 +79,22 @@ class Track:
 						self.actor_dimensions
 					)
 					actor_row.append(img)
+				elif column == Track.ARCFINISH_BACK:
+					img = pygame.transform.scale(
+						pygame.image.load(Track.ARCFINISH_BACK_IMAGE), 
+						self.actor_dimensions
+					)
+					actor_row.append(img)
+				elif column == Track.ARCFINISH_FRONT:
+					img = pygame.transform.scale(
+						pygame.image.load(Track.ARCFINISH_FRONT_IMAGE), 
+						self.actor_dimensions
+					)
+					actor_row.append(img)
 				else:
 					actor_row.append(None)
 			self.actors.append(actor_row)
+
 		for y in range(Track.SIZE):
 			for x in range(Track.SIZE):
 				# Important to notice:
