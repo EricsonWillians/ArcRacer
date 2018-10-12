@@ -53,9 +53,9 @@ class RaceOptions:
         self.components = [
             widgets.TextButton(self.panel, (1, 3), core.Text("Start Race", RACE_OPTIONS_MENU_SIZE, RACE_OPTIONS_MENU_COLOR, RACE_OPTIONS_MENU_FONT, RACE_OPTIONS_MENU_BOLD, RACE_OPTIONS_MENU_ITALIC)),
             widgets.TextLabel(self.panel, (1, 4), core.Text("Players", RACE_OPTIONS_MENU_SIZE, RACE_OPTIONS_MENU_COLOR, RACE_OPTIONS_MENU_FONT, RACE_OPTIONS_MENU_BOLD, RACE_OPTIONS_MENU_ITALIC)),
-            widgets.OptionChooser(self.panel, (3, 4), [str(n) for n in range(1, 6)]),
+            widgets.OptionChooser(self.panel, (3, 4), [str(n) for n in range(0, 6)]),
             widgets.TextLabel(self.panel, (1, 5), core.Text("Humans", RACE_OPTIONS_MENU_SIZE, RACE_OPTIONS_MENU_COLOR, RACE_OPTIONS_MENU_FONT, RACE_OPTIONS_MENU_BOLD, RACE_OPTIONS_MENU_ITALIC)),
-            widgets.OptionChooser(self.panel, (3, 5), [str(n) for n in range(1, 3)]),
+            widgets.OptionChooser(self.panel, (3, 5), [str(n) for n in range(0, 3)]),
             widgets.TextLabel(self.panel, (1, 6), core.Text("Difficulty", RACE_OPTIONS_MENU_SIZE, RACE_OPTIONS_MENU_COLOR, RACE_OPTIONS_MENU_FONT, RACE_OPTIONS_MENU_BOLD, RACE_OPTIONS_MENU_ITALIC)),
             widgets.OptionChooser(self.panel, (3, 6), ["Easy", "Normal", "Hard", "Insane", "Arcturian"], 1),
             widgets.TextLabel(self.panel, (1, 7), core.Text("Laps", RACE_OPTIONS_MENU_SIZE, RACE_OPTIONS_MENU_COLOR, RACE_OPTIONS_MENU_FONT, RACE_OPTIONS_MENU_BOLD, RACE_OPTIONS_MENU_ITALIC)),

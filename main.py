@@ -45,18 +45,26 @@ class GameManager:
 		pass
 
 	def set_number_of_players(self, n):
+		self.bots = []
 		self.number_of_players = n
 		self.players = [
 			actor.Player(
 				actor.Car(
 					self.current_track.spawn_positions[n], 
-					"gfx/player{_n}.png".format(_n=n)
+					f"gfx/player{n}.png"
 				), 
 				self.current_track,
-				'P'+str(n)
+				f'P{n}'
 			) for n in range(1, self.number_of_players+1)
 		]
-		if self.number_of_humans == 1:
+		
+		# If 1 player is human, all the others are bots.
+		# If 2 players are humans (Local oldschool keyboard multiplayer), then the second slot is also reserved.
+		# If there are no human players, then the bots play by themselves.
+
+		if self.number_of_humans == 0:
+			self.bots = [ai.Bot(p, self.current_track) for p in self.players]
+		elif self.number_of_humans == 1:
 			self.bots = [
 				ai.Bot(p, self.current_track) for p in self.players if p != self.players[0]
 			]
@@ -67,8 +75,8 @@ class GameManager:
 
 	def set_number_of_humans(self, n):
 		self.number_of_humans = n
-		if self.number_of_humans == 2 and self.number_of_players == 1:
-			self.set_number_of_players(2)
+		if self.number_of_humans < 3:
+			self.set_number_of_players(n)
 
 	def set_difficulty(self, d):
 		if d == "Easy":
@@ -91,15 +99,15 @@ class GameManager:
 				self.current_track = t
 
 	def default(self):
-		self.number_of_humans = 1
-		self.number_of_players = 1
+		self.number_of_humans = 0
+		self.number_of_players = 0
+		self.bots = []
+		self.players = []
+		self.difficulty = 1.75
 		self.max_player_slot = 5
-		self.set_number_of_players(self.number_of_players)
 		self.checkpoints_cleared_of_all_players = {}
 		self.racing_positions = []
 		self.update_racing_positions()
-		self.set_difficulty("Normal")
-		self.set_laps(15)
 
 if __name__ == "__main__":
 
@@ -203,10 +211,13 @@ if __name__ == "__main__":
 					if isinstance(c, widgets.OptionChooser):
 						c.activate(e)
 				race_options.components[0].on_click(e, sm.change_scene, SceneManager.GAME)
+				if gm.number_of_humans == 2 and gm.number_of_players < 2:
+					gm.set_number_of_players(2)
+					race_options.components[2].index = 2
 				race_options.components[2].on_change(e, 
-					gm.set_number_of_players,
-					int(race_options.components[2].current_value)
-				)
+						gm.set_number_of_players,
+						int(race_options.components[2].current_value)
+					)
 				race_options.components[4].on_change(e, 
 					gm.set_number_of_humans,
 					int(race_options.components[4].current_value)
@@ -233,37 +244,39 @@ if __name__ == "__main__":
 			race_options.components[2].text = core.Text(gm.number_of_players, ui.RACE_OPTIONS_MENU_SIZE, ui.RACE_OPTIONS_MENU_COLOR, ui.RACE_OPTIONS_MENU_FONT, ui.RACE_OPTIONS_MENU_BOLD, ui.RACE_OPTIONS_MENU_ITALIC)
 			race_options.components[2].update_text()
 		elif sm.scene == SceneManager.GAME:
-			for n in range(gm.number_of_humans):
-				gm.players[n].move()
-			for bot in gm.bots:
-				bot.think(gm.difficulty)	
-			gm.update_racing_positions()
+			if gm.players:
 			# Updating the text of the player info panels.
-			game_hud.player1_info_panel_labels[2].set_text(
-				core.Text("{0:.2f}".format(round(gm.players[0].car.speed, 2)), game_hud.FONT_SIZE, game_hud.COLOR, game_hud.FONT, game_hud.BOLD, game_hud.ITALIC)
-			)
-			game_hud.player1_info_panel_labels[4].set_text(
-				core.Text(str(gm.players[0].car.gear), game_hud.FONT_SIZE, game_hud.COLOR, game_hud.FONT, game_hud.BOLD, game_hud.ITALIC)
-			)
-			game_hud.player1_info_panel_labels[6].set_text(
-				core.Text("VOID", game_hud.FONT_SIZE, game_hud.COLOR, game_hud.FONT, game_hud.BOLD, game_hud.ITALIC)
-			)
-			game_hud.player1_info_panel_labels[8].set_text(
-				core.Text(str(gm.players[0].current_lap), game_hud.FONT_SIZE, game_hud.COLOR, game_hud.FONT, game_hud.BOLD, game_hud.ITALIC)
-			)
-			if gm.number_of_humans == 2:
-				game_hud.player2_info_panel_labels[2].set_text(
-					core.Text("{0:.2f}".format(round(gm.players[1].car.speed, 2)), game_hud.FONT_SIZE, game_hud.COLOR, game_hud.FONT, game_hud.BOLD, game_hud.ITALIC)
+				for n in range(gm.number_of_humans):
+					gm.players[n].move()
+				game_hud.player1_info_panel_labels[2].set_text(
+					core.Text("{0:.2f}".format(round(gm.players[0].car.speed, 2)), game_hud.FONT_SIZE, game_hud.COLOR, game_hud.FONT, game_hud.BOLD, game_hud.ITALIC)
 				)
-				game_hud.player2_info_panel_labels[4].set_text(
-					core.Text(str(gm.players[1].car.gear), game_hud.FONT_SIZE, game_hud.COLOR, game_hud.FONT, game_hud.BOLD, game_hud.ITALIC)
+				game_hud.player1_info_panel_labels[4].set_text(
+					core.Text(str(gm.players[0].car.gear), game_hud.FONT_SIZE, game_hud.COLOR, game_hud.FONT, game_hud.BOLD, game_hud.ITALIC)
 				)
-				game_hud.player2_info_panel_labels[6].set_text(
+				game_hud.player1_info_panel_labels[6].set_text(
 					core.Text("VOID", game_hud.FONT_SIZE, game_hud.COLOR, game_hud.FONT, game_hud.BOLD, game_hud.ITALIC)
 				)
-				game_hud.player2_info_panel_labels[8].set_text(
-					core.Text(str(gm.players[1].current_lap), game_hud.FONT_SIZE, game_hud.COLOR, game_hud.FONT, game_hud.BOLD, game_hud.ITALIC)
+				game_hud.player1_info_panel_labels[8].set_text(
+					core.Text(str(gm.players[0].current_lap), game_hud.FONT_SIZE, game_hud.COLOR, game_hud.FONT, game_hud.BOLD, game_hud.ITALIC)
 				)
+				if gm.number_of_humans == 2:
+					game_hud.player2_info_panel_labels[2].set_text(
+						core.Text("{0:.2f}".format(round(gm.players[1].car.speed, 2)), game_hud.FONT_SIZE, game_hud.COLOR, game_hud.FONT, game_hud.BOLD, game_hud.ITALIC)
+					)
+					game_hud.player2_info_panel_labels[4].set_text(
+						core.Text(str(gm.players[1].car.gear), game_hud.FONT_SIZE, game_hud.COLOR, game_hud.FONT, game_hud.BOLD, game_hud.ITALIC)
+					)
+					game_hud.player2_info_panel_labels[6].set_text(
+						core.Text("VOID", game_hud.FONT_SIZE, game_hud.COLOR, game_hud.FONT, game_hud.BOLD, game_hud.ITALIC)
+					)
+					game_hud.player2_info_panel_labels[8].set_text(
+						core.Text(str(gm.players[1].current_lap), game_hud.FONT_SIZE, game_hud.COLOR, game_hud.FONT, game_hud.BOLD, game_hud.ITALIC)
+					)
+				gm.update_racing_positions()
+			if gm.bots:
+				for bot in gm.bots:
+					bot.think(gm.difficulty)	
 				
 
 			
