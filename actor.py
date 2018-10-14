@@ -1,6 +1,7 @@
 import pygame
 import math
 import json
+import util
 
 with open("cfg.json") as f:
 	options = json.load(f)
@@ -59,13 +60,35 @@ class Player:
 		self.track = track
 		self.name = name
 		self.position = 1
+		self.raw_time_in_milliseconds = 0
+		self.time = {}
 		self.reached_lap = False
 		self.crossed_lap = False
 		self.current_lap = 1
+		self.laps = {}
+		self.lap_timestamps = {
+			1: ("--", "--", "--")
+		}
+		for n in range(99):
+			self.laps[n] = 0
 		self.clock = 0
+
+	def get_time_to_clear_laps(self):
+		time = 0
+		for lap in self.laps:
+			time += self.laps[lap]
+		return time 
 
 	def set_car(self, car):
 		self.car = car
+
+	def track_time(self, ms):
+		self.raw_time_in_milliseconds += ms
+		converted = util.convert_ms(self.raw_time_in_milliseconds)
+		self.time["milliseconds"] = converted[0]
+		self.time["seconds"] = int(converted[1])
+		self.time["minutes"] = int(converted[2])
+		self.time["hours"] = int(converted[3])
 
 	def move(self, handicap=0):
 		dx = math.cos(math.radians(self.car.angle))
@@ -156,7 +179,9 @@ class Player:
 				elif self.track.actor_positions[pos] == self.track.ARCFINISH:
 					if self.reached_lap:
 						self.current_lap += 1
+						self.lap_timestamps[self.current_lap] = (self.time["minutes"], self.time["seconds"], self.time["milliseconds"])
 						self.reached_lap = False
 				elif self.track.actor_positions[pos] == self.track.ARCFINISH_FRONT:
 					self.crossed_lap = True
+					self.laps[self.current_lap] += 1
 						

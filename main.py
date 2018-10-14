@@ -19,7 +19,8 @@ class SceneManager:
 	MAIN_MENU = 0
 	RACE_OPTIONS = 1
 	GAME = 2
-	PAUSE = 3
+	RESULTS = 3
+	PAUSE = 4
 
 	def __init__(self):
 		self.scene = 0
@@ -36,10 +37,6 @@ class GameManager:
 
 	def get_track_list(self):
 		return [track.name for track in self.loaded_tracks]
-
-	def update_racing_positions(self):
-		# I'll find a way to deal with this.	
-		pass
 
 	def get_player_racing_position_by_name(self, name):
 		pass
@@ -72,6 +69,9 @@ class GameManager:
 			self.bots = [
 				ai.Bot(p, self.current_track) for p in self.players if p != self.players[0] and p != self.players[1]
 			]
+		
+		for player in self.players:
+			self.racing_positions[player.name] = 0
 
 	def set_number_of_humans(self, n):
 		self.number_of_humans = n
@@ -104,10 +104,9 @@ class GameManager:
 		self.bots = []
 		self.players = []
 		self.difficulty = 1.75
+		self.laps = 5
 		self.max_player_slot = 5
-		self.checkpoints_cleared_of_all_players = {}
-		self.racing_positions = []
-		self.update_racing_positions()
+		self.racing_positions = {}
 
 if __name__ == "__main__":
 
@@ -139,6 +138,7 @@ if __name__ == "__main__":
 	gm = GameManager(loaded_tracks)
 	main_menu = ui.MainMenu()
 	race_options = ui.RaceOptions(gm)
+	results = ui.Results(gm)
 	game_hud = hud.HUD(gm)
 	pause_screen = ui.PauseScreen()
 
@@ -153,13 +153,16 @@ if __name__ == "__main__":
 			gm.current_track.draw(screen)
 			[p.car.draw(screen) for p in gm.players]
 			game_hud.draw(screen)
+		elif sm.scene == SceneManager.RESULTS:
+			results.draw(screen)
 		elif sm.scene == SceneManager.PAUSE:
 			pause_screen.draw(screen)
 
 	def intercept_in_game(e):
-		for n in range(gm.number_of_humans):
-			if e.type == pygame.KEYDOWN:
-				# Movement-related
+
+		if e.type == pygame.KEYDOWN:
+			# Movement-related
+			for n in range(gm.number_of_humans):
 				if e.key == eval(options["PLAYER{_n}_ACCELERATE".format(_n=n+1)]):
 					gm.players[n].states[0] = True
 				elif e.key == eval(options["PLAYER{_n}_REVERSE".format(_n=n+1)]):
@@ -168,13 +171,17 @@ if __name__ == "__main__":
 					gm.players[n].states[2] = True	
 				elif e.key == eval(options["PLAYER{_n}_STEER_RIGHT".format(_n=n+1)]):
 					gm.players[n].states[3] = True
-				# Other
-				elif e.key == eval(options["PAUSE"]):
-					sm.change_scene(SceneManager.PAUSE)
-				elif e.key == pygame.K_ESCAPE:
-					gm.default()
-					sm.change_scene(SceneManager.MAIN_MENU)
-			elif e.type == pygame.KEYUP:	
+			# Other
+			if e.key == eval(options["PAUSE"]):
+				sm.change_scene(SceneManager.PAUSE)
+			elif e.key == pygame.K_ESCAPE:
+				gm.default()
+				sm.change_scene(SceneManager.MAIN_MENU)
+			elif e.key == pygame.K_F12:
+				gm.default()
+				sm.change_scene(SceneManager.RESULTS)
+		elif e.type == pygame.KEYUP:	
+			for n in range(gm.number_of_humans):
 				if e.key == eval(options["PLAYER{_n}_ACCELERATE".format(_n=n+1)]):
 					gm.players[n].states[0] = False
 				elif e.key == eval(options["PLAYER{_n}_REVERSE".format(_n=n+1)]):
@@ -183,6 +190,7 @@ if __name__ == "__main__":
 					gm.players[n].states[2] = False
 				elif e.key == eval(options["PLAYER{_n}_STEER_RIGHT".format(_n=n+1)]):
 					gm.players[n].states[3] = False
+		
 		for n in range(gm.number_of_humans, gm.max_player_slot):
 			pass
 
@@ -197,7 +205,7 @@ if __name__ == "__main__":
 				sm.change_scene(SceneManager.GAME)
 
 	while (running):
-		clock.tick(FPS)
+		ms = clock.tick(FPS) # Milliseconds after last tick
 		redraw()
 		for e in pygame.event.get():
 			if e.type == pygame.QUIT:
@@ -213,7 +221,7 @@ if __name__ == "__main__":
 				race_options.components[0].on_click(e, sm.change_scene, SceneManager.GAME)
 				if gm.number_of_humans == 2 and gm.number_of_players < 2:
 					gm.set_number_of_players(2)
-					race_options.components[2].index = 2
+					race_options.components[2].index = 2 # Seting OptionChooser's value manually
 				race_options.components[2].on_change(e, 
 						gm.set_number_of_players,
 						int(race_options.components[2].current_value)
@@ -245,38 +253,34 @@ if __name__ == "__main__":
 			race_options.components[2].update_text()
 		elif sm.scene == SceneManager.GAME:
 			if gm.players:
-			# Updating the text of the player info panels.
 				for n in range(gm.number_of_humans):
 					gm.players[n].move()
-				game_hud.player1_info_panel_labels[2].set_text(
-					core.Text("{0:.2f}".format(round(gm.players[0].car.speed, 2)), game_hud.FONT_SIZE, game_hud.COLOR, game_hud.FONT, game_hud.BOLD, game_hud.ITALIC)
-				)
-				game_hud.player1_info_panel_labels[4].set_text(
-					core.Text(str(gm.players[0].car.gear), game_hud.FONT_SIZE, game_hud.COLOR, game_hud.FONT, game_hud.BOLD, game_hud.ITALIC)
-				)
-				game_hud.player1_info_panel_labels[6].set_text(
-					core.Text("VOID", game_hud.FONT_SIZE, game_hud.COLOR, game_hud.FONT, game_hud.BOLD, game_hud.ITALIC)
-				)
-				game_hud.player1_info_panel_labels[8].set_text(
-					core.Text(str(gm.players[0].current_lap), game_hud.FONT_SIZE, game_hud.COLOR, game_hud.FONT, game_hud.BOLD, game_hud.ITALIC)
-				)
-				if gm.number_of_humans == 2:
-					game_hud.player2_info_panel_labels[2].set_text(
-						core.Text("{0:.2f}".format(round(gm.players[1].car.speed, 2)), game_hud.FONT_SIZE, game_hud.COLOR, game_hud.FONT, game_hud.BOLD, game_hud.ITALIC)
-					)
-					game_hud.player2_info_panel_labels[4].set_text(
-						core.Text(str(gm.players[1].car.gear), game_hud.FONT_SIZE, game_hud.COLOR, game_hud.FONT, game_hud.BOLD, game_hud.ITALIC)
-					)
-					game_hud.player2_info_panel_labels[6].set_text(
-						core.Text("VOID", game_hud.FONT_SIZE, game_hud.COLOR, game_hud.FONT, game_hud.BOLD, game_hud.ITALIC)
-					)
-					game_hud.player2_info_panel_labels[8].set_text(
-						core.Text(str(gm.players[1].current_lap), game_hud.FONT_SIZE, game_hud.COLOR, game_hud.FONT, game_hud.BOLD, game_hud.ITALIC)
-					)
-				gm.update_racing_positions()
+				for player in gm.players:
+					player.track_time(ms)
+					if not player.reached_lap and player.crossed_lap:
+						# Updating the texts of the player info panels.
+						game_hud.player1_info_panel_labels[2].set_text(
+							core.Text(str(gm.players[0].current_lap), game_hud.FONT_SIZE, game_hud.COLOR, game_hud.FONT, game_hud.BOLD, game_hud.ITALIC))
+						game_hud.player1_info_panel_labels[4].set_text(
+							core.Text(f"{gm.players[0].lap_timestamps[gm.players[0].current_lap][0]}:{gm.players[0].lap_timestamps[gm.players[0].current_lap][1]}:{gm.players[0].lap_timestamps[gm.players[0].current_lap][2]}", game_hud.FONT_SIZE, game_hud.COLOR, game_hud.FONT, game_hud.BOLD, game_hud.ITALIC)
+						)
+						if gm.number_of_humans == 2:
+							game_hud.player2_info_panel_labels[2].set_text(
+								core.Text(str(gm.players[1].current_lap), game_hud.FONT_SIZE, game_hud.COLOR, game_hud.FONT, game_hud.BOLD, game_hud.ITALIC)
+							)
+							game_hud.player2_info_panel_labels[4].set_text(
+							core.Text(f"{gm.players[1].lap_timestamps[gm.players[1].current_lap][0]}:{gm.players[1].lap_timestamps[gm.players[1].current_lap][1]}:{gm.players[1].lap_timestamps[gm.players[1].current_lap][2]}", game_hud.FONT_SIZE, game_hud.COLOR, game_hud.FONT, game_hud.BOLD, game_hud.ITALIC)
+						)
+
+			for player in gm.players:
+				if player.current_lap == gm.laps:
+					gm.default()
+					sm.change_scene(SceneManager.RESULTS)
+				# gm.racing_positions[player.name] = player.get_time_to_clear_laps()
+				# sorted_by_value = sorted(gm.racing_positions.items(), key=lambda kv: kv[1])
+
 			if gm.bots:
 				for bot in gm.bots:
-					bot.think(gm.difficulty)	
-				
+					bot.think(gm.difficulty)
 
 			

@@ -7,6 +7,7 @@ with open("cfg.json") as f:
 
 TITLE_SIZE = 64
 MENU_SIZE = 32
+RESULTS_SIZE = 16
 MENU_COLOR = core.WHITE
 MENU_FONT = "arial"
 MENU_BOLD = True
@@ -75,6 +76,47 @@ class RaceOptions:
         self.panel.draw(surface)
         self.title.draw(surface)
         [c.draw(surface) for c in self.components]
+
+class Results:
+
+	def __init__(self, gm):
+		self.panel = widgets.Panel(core.Grid((6, 16), (options["RESOLUTION"][0], options["RESOLUTION"][1])), None, None, (0, 0))
+		self.panel.set_color(core.BLACK)
+
+		self.title = widgets.TextLabel(self.panel, (1, 1), core.Text("Results ", TITLE_SIZE, MENU_COLOR, MENU_FONT, MENU_BOLD, True))
+		self.title.set_span((3, 0))
+		self.components = [
+			widgets.TextLabel(self.panel, (1, 4), core.Text("Player 1: ", RESULTS_SIZE, MENU_COLOR, MENU_FONT, MENU_BOLD, True)),
+			widgets.TextLabel(self.panel, (2, 4), core.Text("", RESULTS_SIZE, MENU_COLOR, MENU_FONT, MENU_BOLD, True)),
+			widgets.TextLabel(self.panel, (3, 4), core.Text("", RESULTS_SIZE, MENU_COLOR, MENU_FONT, MENU_BOLD, True)),
+			widgets.TextLabel(self.panel, (1, 5), core.Text("Player 2: ", RESULTS_SIZE, MENU_COLOR, MENU_FONT, MENU_BOLD, True)),
+			widgets.TextLabel(self.panel, (2, 5), core.Text("", RESULTS_SIZE, MENU_COLOR, MENU_FONT, MENU_BOLD, True)),
+			widgets.TextLabel(self.panel, (3, 4), core.Text("", RESULTS_SIZE, MENU_COLOR, MENU_FONT, MENU_BOLD, True)),
+			widgets.TextLabel(self.panel, (1, 6), core.Text("Player 3: ", RESULTS_SIZE, MENU_COLOR, MENU_FONT, MENU_BOLD, True)),
+			widgets.TextLabel(self.panel, (2, 6), core.Text("", RESULTS_SIZE, MENU_COLOR, MENU_FONT, MENU_BOLD, True)),
+			widgets.TextLabel(self.panel, (3, 4), core.Text("", RESULTS_SIZE, MENU_COLOR, MENU_FONT, MENU_BOLD, True)),
+			widgets.TextLabel(self.panel, (1, 7), core.Text("Player 4: ", RESULTS_SIZE, MENU_COLOR, MENU_FONT, MENU_BOLD, True)),
+			widgets.TextLabel(self.panel, (2, 7), core.Text("", RESULTS_SIZE, MENU_COLOR, MENU_FONT, MENU_BOLD, True)),
+			widgets.TextLabel(self.panel, (3, 4), core.Text("", RESULTS_SIZE, MENU_COLOR, MENU_FONT, MENU_BOLD, True)),
+			widgets.TextLabel(self.panel, (1, 8), core.Text("Player 5: ", RESULTS_SIZE, MENU_COLOR, MENU_FONT, MENU_BOLD, True)),
+			widgets.TextLabel(self.panel, (2, 8), core.Text("", RESULTS_SIZE, MENU_COLOR, MENU_FONT, MENU_BOLD, True)),
+			widgets.TextLabel(self.panel, (3, 4), core.Text("", RESULTS_SIZE, MENU_COLOR, MENU_FONT, MENU_BOLD, True))
+		]
+		self.buttons = [
+            widgets.TextButton(self.panel, (2, 12), core.Text("Restart", MENU_SIZE, MENU_COLOR, MENU_FONT, MENU_BOLD)),
+            widgets.TextButton(self.panel, (2, 13), core.Text("Quit", MENU_SIZE, MENU_COLOR, MENU_FONT, MENU_BOLD))
+        ]
+		[b.set_color(core.BLACK) for b in self.buttons]
+		[b.set_alignment(widgets.TextLabel.ALIGN_CENTER) for b in self.buttons]
+		[b.set_span((1, 0)) for b in self.buttons]
+		[b.set_border(core.WHITE, 4) for b in self.buttons]
+		
+
+	def draw(self, surface):
+		self.panel.draw(surface)
+		self.title.draw(surface)
+		[c.draw(surface) for c in self.components]
+		[b.draw(surface) for b in self.buttons]
 
 class PauseScreen:
 
