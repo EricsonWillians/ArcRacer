@@ -274,6 +274,16 @@ if __name__ == "__main__":
 
 			for player in gm.players:
 				if player.current_lap == gm.laps:
+					if len(gm.players) > 0:
+						results.components[1].set_text(f"{gm.players[0].lap_timestamps[gm.players[0].current_lap][0]}:{gm.players[0].lap_timestamps[gm.players[0].current_lap][1]}:{gm.players[0].lap_timestamps[gm.players[0].current_lap][2]}")
+					if len(gm.players) > 1:
+						results.components[4].set_text(f"{gm.players[1].lap_timestamps[gm.players[1].current_lap][0]}:{gm.players[1].lap_timestamps[gm.players[1].current_lap][1]}:{gm.players[1].lap_timestamps[gm.players[1].current_lap][2]}")
+					if len(gm.players) > 2:
+						results.components[7].set_text(f"{gm.players[2].lap_timestamps[gm.players[2].current_lap][0]}:{gm.players[2].lap_timestamps[gm.players[2].current_lap][1]}:{gm.players[2].lap_timestamps[gm.players[2].current_lap][2]}")
+					if len(gm.players) > 3:
+						results.components[10].set_text(f"{gm.players[3].lap_timestamps[gm.players[3].current_lap][0]}:{gm.players[3].lap_timestamps[gm.players[3].current_lap][1]}:{gm.players[3].lap_timestamps[gm.players[3].current_lap][2]}")
+					if len(gm.players) > 4:
+						results.components[13].set_text(f"{gm.players[4].lap_timestamps[gm.players[4].current_lap][0]}:{gm.players[4].lap_timestamps[gm.players[4].current_lap][1]}:{gm.players[4].lap_timestamps[gm.players[4].current_lap][2]}")
 					gm.default()
 					sm.change_scene(SceneManager.RESULTS)
 				# gm.racing_positions[player.name] = player.get_time_to_clear_laps()

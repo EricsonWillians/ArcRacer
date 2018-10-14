@@ -64,10 +64,10 @@ class Player:
 		self.time = {}
 		self.reached_lap = False
 		self.crossed_lap = False
-		self.current_lap = 1
+		self.current_lap = 0
 		self.laps = {}
 		self.lap_timestamps = {
-			1: ("--", "--", "--")
+			0: ("--", "--", "--")
 		}
 		for n in range(99):
 			self.laps[n] = 0

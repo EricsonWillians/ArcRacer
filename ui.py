@@ -8,6 +8,7 @@ with open("cfg.json") as f:
 TITLE_SIZE = 64
 MENU_SIZE = 32
 RESULTS_SIZE = 16
+RESULTS_FONT = "monospace"
 MENU_COLOR = core.WHITE
 MENU_FONT = "arial"
 MENU_BOLD = True
@@ -83,24 +84,23 @@ class Results:
 		self.panel = widgets.Panel(core.Grid((6, 16), (options["RESOLUTION"][0], options["RESOLUTION"][1])), None, None, (0, 0))
 		self.panel.set_color(core.BLACK)
 
-		self.title = widgets.TextLabel(self.panel, (1, 1), core.Text("Results ", TITLE_SIZE, MENU_COLOR, MENU_FONT, MENU_BOLD, True))
-		self.title.set_span((3, 0))
+		self.title = widgets.TextLabel(self.panel, (2, 1), core.Text("Results ", TITLE_SIZE, MENU_COLOR, MENU_FONT, MENU_BOLD, True))
 		self.components = [
-			widgets.TextLabel(self.panel, (1, 4), core.Text("Player 1: ", RESULTS_SIZE, MENU_COLOR, MENU_FONT, MENU_BOLD, True)),
-			widgets.TextLabel(self.panel, (2, 4), core.Text("", RESULTS_SIZE, MENU_COLOR, MENU_FONT, MENU_BOLD, True)),
-			widgets.TextLabel(self.panel, (3, 4), core.Text("", RESULTS_SIZE, MENU_COLOR, MENU_FONT, MENU_BOLD, True)),
-			widgets.TextLabel(self.panel, (1, 5), core.Text("Player 2: ", RESULTS_SIZE, MENU_COLOR, MENU_FONT, MENU_BOLD, True)),
-			widgets.TextLabel(self.panel, (2, 5), core.Text("", RESULTS_SIZE, MENU_COLOR, MENU_FONT, MENU_BOLD, True)),
-			widgets.TextLabel(self.panel, (3, 4), core.Text("", RESULTS_SIZE, MENU_COLOR, MENU_FONT, MENU_BOLD, True)),
-			widgets.TextLabel(self.panel, (1, 6), core.Text("Player 3: ", RESULTS_SIZE, MENU_COLOR, MENU_FONT, MENU_BOLD, True)),
-			widgets.TextLabel(self.panel, (2, 6), core.Text("", RESULTS_SIZE, MENU_COLOR, MENU_FONT, MENU_BOLD, True)),
-			widgets.TextLabel(self.panel, (3, 4), core.Text("", RESULTS_SIZE, MENU_COLOR, MENU_FONT, MENU_BOLD, True)),
-			widgets.TextLabel(self.panel, (1, 7), core.Text("Player 4: ", RESULTS_SIZE, MENU_COLOR, MENU_FONT, MENU_BOLD, True)),
-			widgets.TextLabel(self.panel, (2, 7), core.Text("", RESULTS_SIZE, MENU_COLOR, MENU_FONT, MENU_BOLD, True)),
-			widgets.TextLabel(self.panel, (3, 4), core.Text("", RESULTS_SIZE, MENU_COLOR, MENU_FONT, MENU_BOLD, True)),
-			widgets.TextLabel(self.panel, (1, 8), core.Text("Player 5: ", RESULTS_SIZE, MENU_COLOR, MENU_FONT, MENU_BOLD, True)),
-			widgets.TextLabel(self.panel, (2, 8), core.Text("", RESULTS_SIZE, MENU_COLOR, MENU_FONT, MENU_BOLD, True)),
-			widgets.TextLabel(self.panel, (3, 4), core.Text("", RESULTS_SIZE, MENU_COLOR, MENU_FONT, MENU_BOLD, True))
+			widgets.TextLabel(self.panel, (1, 4), core.Text("Player 1: ", RESULTS_SIZE, MENU_COLOR, RESULTS_FONT, MENU_BOLD, True)),
+			widgets.TextLabel(self.panel, (2, 4), core.Text("", RESULTS_SIZE, MENU_COLOR, RESULTS_FONT, MENU_BOLD, True)), # Player 1 Time (Index 1)
+			widgets.TextLabel(self.panel, (3, 4), core.Text("", RESULTS_SIZE, MENU_COLOR, RESULTS_FONT, MENU_BOLD, True)), # Player 1 Result (Index 2)
+			widgets.TextLabel(self.panel, (1, 5), core.Text("Player 2: ", RESULTS_SIZE, MENU_COLOR, RESULTS_FONT, MENU_BOLD, True)),
+			widgets.TextLabel(self.panel, (2, 5), core.Text("", RESULTS_SIZE, MENU_COLOR, RESULTS_FONT, MENU_BOLD, True)),  # Player 2 Time (Index 4)
+			widgets.TextLabel(self.panel, (3, 4), core.Text("", RESULTS_SIZE, MENU_COLOR, RESULTS_FONT, MENU_BOLD, True)), # Player 2 Result (Index 5)
+			widgets.TextLabel(self.panel, (1, 6), core.Text("Player 3: ", RESULTS_SIZE, MENU_COLOR, RESULTS_FONT, MENU_BOLD, True)),
+			widgets.TextLabel(self.panel, (2, 6), core.Text("", RESULTS_SIZE, MENU_COLOR, RESULTS_FONT, MENU_BOLD, True)), # Player 3 Time (Index 7)
+			widgets.TextLabel(self.panel, (3, 4), core.Text("", RESULTS_SIZE, MENU_COLOR, RESULTS_FONT, MENU_BOLD, True)), # Player 3 Result (Index 8)
+			widgets.TextLabel(self.panel, (1, 7), core.Text("Player 4: ", RESULTS_SIZE, MENU_COLOR, RESULTS_FONT, MENU_BOLD, True)),
+			widgets.TextLabel(self.panel, (2, 7), core.Text("", RESULTS_SIZE, MENU_COLOR, RESULTS_FONT, MENU_BOLD, True)), # Player 4 Time (Index 10)
+			widgets.TextLabel(self.panel, (3, 4), core.Text("", RESULTS_SIZE, MENU_COLOR, RESULTS_FONT, MENU_BOLD, True)), # Player 4 Result (Index 11)
+			widgets.TextLabel(self.panel, (1, 8), core.Text("Player 5: ", RESULTS_SIZE, MENU_COLOR, RESULTS_FONT, MENU_BOLD, True)),
+			widgets.TextLabel(self.panel, (2, 8), core.Text("", RESULTS_SIZE, MENU_COLOR, RESULTS_FONT, MENU_BOLD, True)), # Player 5 Time (Index 13)
+			widgets.TextLabel(self.panel, (3, 4), core.Text("", RESULTS_SIZE, MENU_COLOR, RESULTS_FONT, MENU_BOLD, True)) # Player 5 Result (Index 14)
 		]
 		self.buttons = [
             widgets.TextButton(self.panel, (2, 12), core.Text("Restart", MENU_SIZE, MENU_COLOR, MENU_FONT, MENU_BOLD)),
