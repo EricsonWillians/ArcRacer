@@ -59,6 +59,9 @@ class Player:
 		self.states = [False for x in range(4)]
 		self.track = track
 		self.name = name
+		self.default()
+
+	def default(self):
 		self.position = 1
 		self.raw_time_in_milliseconds = 0
 		self.time = {}

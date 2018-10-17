@@ -84,7 +84,8 @@ class Results:
 		self.panel = widgets.Panel(core.Grid((6, 16), (options["RESOLUTION"][0], options["RESOLUTION"][1])), None, None, (0, 0))
 		self.panel.set_color(core.BLACK)
 
-		self.title = widgets.TextLabel(self.panel, (2, 1), core.Text("Results ", TITLE_SIZE, MENU_COLOR, MENU_FONT, MENU_BOLD, True))
+		self.title = widgets.TextLabel(self.panel, (0, 1), core.Text("RESULTS", TITLE_SIZE, MENU_COLOR, MENU_FONT, MENU_BOLD, True), widgets.TextLabel.ALIGN_CENTER)
+		self.title.set_span((5, 0))
 		self.components = [
 			widgets.TextLabel(self.panel, (1, 4), core.Text("Player 1: ", RESULTS_SIZE, MENU_COLOR, RESULTS_FONT, MENU_BOLD, True)),
 			widgets.TextLabel(self.panel, (2, 4), core.Text("", RESULTS_SIZE, MENU_COLOR, RESULTS_FONT, MENU_BOLD, True)), # Player 1 Time (Index 1)
